@@ -1,0 +1,52 @@
+{
+    "inputs": {
+        "installation_area_m2": 120.0,
+        "monthly_consumption_kwh": 500.0,
+        "annual_consumption_kwh": 6000.0
+    },
+    "solar_system": {
+        "capacity_kw": 17.14,
+        "annual_generation_kwh": 23032.9,
+        "monthly_generation_kwh": [
+            2180.4,
+            2691.8,
+            2897.5,
+            2702.1,
+            2246.8,
+            1924.4,
+            1206.6,
+            935.0,
+            603.0,
+            784.9,
+            1052.6,
+            1635.6,
+            2172.2
+        ],
+        "load_coverage_pct": 100.0
+    },
+    "wind_system": {
+        "feasible_on_site": true,
+        "capacity_kw": 4.0,
+        "annual_generation_kwh": 16805.6,
+        "monthly_generation_kwh": [
+            1680.1,
+            1519.8,
+            1639.0,
+            1292.1,
+            1141.1,
+            1165.7,
+            1155.2,
+            1130.5,
+            1283.7,
+            1560.7,
+            1421.9,
+            1443.3,
+            372.5
+        ],
+        "load_coverage_pct": 100.0
+    },
+    "hybrid_system": {
+        "annual_generation_kwh": 39838.5,
+        "load_coverage_pct": 100.0
+    }
+}

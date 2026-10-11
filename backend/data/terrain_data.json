@@ -1,0 +1,10 @@
+{
+    "latitude": -41.28,
+    "longitude": 174.77,
+    "elevation_meters": 58.8,
+    "estimated_slope_degrees": 9.8,
+    "terrain_type": "Plains / Flat Lowland",
+    "wind_terrain_speedup": 1.0,
+    "terrain_suitability_score": 92.0,
+    "elevation_source": "Open-Elevation API"
+}

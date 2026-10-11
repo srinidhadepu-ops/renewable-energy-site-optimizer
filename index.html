@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Renewable Energy Site Optimizer (Solar & Wind AI)</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #38bdf8;
+      --accent-solar: #f59e0b;
+      --accent-wind: #06b6d4;
+      --success: #10b981;
+      --border: #334155;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background: var(--bg); color: var(--text); padding: 20px; }
+    .header { text-align: center; margin-bottom: 24px; }
+    .header h1 { font-size: 2rem; color: #fff; margin-bottom: 6px; }
+    .header p { color: var(--text-muted); font-size: 1rem; }
+    
+    .grid-layout { display: grid; grid-template-columns: 1.1fr 1fr; gap: 20px; max-width: 1400px; margin: 0 auto; }
+    .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.3); }
+    .card h2 { font-size: 1.2rem; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+    
+    #map { height: 380px; width: 100%; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 12px; }
+    
+    .form-group { margin-bottom: 14px; }
+    label { display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 4px; }
+    input { width: 100%; background: #0f172a; border: 1px solid var(--border); color: #fff; padding: 8px 12px; border-radius: 6px; font-size: 0.95rem; }
+    .inputs-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    
+    .btn-analyze {
+      width: 100%; background: linear-gradient(135deg, #0284c7, #0ea5e9); color: #fff; border: none;
+      padding: 12px; font-size: 1rem; font-weight: 600; border-radius: 8px; cursor: pointer; transition: all 0.2s;
+      margin-top: 10px;
+    }
+    .btn-analyze:hover { opacity: 0.9; transform: translateY(-1px); }
+    
+    .verdict-banner {
+      background: linear-gradient(135deg, #1e3a5f, #0f2b48); border: 2px solid var(--primary);
+      border-radius: 10px; padding: 18px; margin-bottom: 20px; text-align: center;
+    }
+    .verdict-title { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--primary); }
+    .verdict-name { font-size: 1.8rem; font-weight: 700; color: #fff; margin: 6px 0; }
+    .verdict-desc { font-size: 0.9rem; color: #cbd5e1; line-height: 1.4; }
+    
+    .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
+    .kpi-box { background: #0f172a; border: 1px solid var(--border); border-radius: 8px; padding: 12px; text-align: center; }
+    .kpi-label { font-size: 0.75rem; color: var(--text-muted); }
+    .kpi-val { font-size: 1.25rem; font-weight: 700; margin-top: 4px; }
+    
+    .score-bar-container { margin-bottom: 12px; }
+    .score-header { display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 4px; }
+    .progress-track { width: 100%; height: 10px; background: #334155; border-radius: 5px; overflow: hidden; }
+    .progress-fill { height: 100%; border-radius: 5px; transition: width 0.6s ease; }
+    
+    .chart-box { height: 220px; margin-top: 10px; }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h1>Renewable Energy Site Optimizer</h1>
+    <p>Satellite Data & Machine Learning Decision Engine for Solar & Wind Power Installations</p>
+  </div>
+
+  <div class="grid-layout">
+    <!-- LEFT: MAP & LOCATION SELECTION -->
+    <div class="card">
+      <h2>📍 Site Geospatial Location</h2>
+      <div id="map"></div>
+      
+      <div class="inputs-row">
+        <div class="form-group">
+          <label>Latitude</label>
+          <input type="number" step="0.0001" id="lat" value="22.7196">
+        </div>
+        <div class="form-group">
+          <label>Longitude</label>
+          <input type="number" step="0.0001" id="lon" value="75.8577">
+        </div>
+      </div>
+
+      <div class="inputs-row">
+        <div class="form-group">
+          <label>Usable Area (m²)</label>
+          <input type="number" id="area" value="100">
+        </div>
+        <div class="form-group">
+          <label>Monthly Consumption (kWh)</label>
+          <input type="number" id="consumption" value="500">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Electricity Tariff (₹ / kWh)</label>
+        <input type="number" step="0.1" id="tariff" value="7.5">
+      </div>
+
+      <button class="btn-analyze" onclick="runAnalysis()">Run Renewable Optimization</button>
+    </div>
+
+    <!-- RIGHT: DASHBOARD & AI RECOMMENDATION -->
+    <div class="card">
+      <h2>🎯 Decision & Techno-Economics</h2>
+
+      <div class="verdict-banner">
+        <div class="verdict-title">System Recommendation</div>
+        <div class="verdict-name" id="verdict">Rooftop / Ground Solar PV</div>
+        <div class="verdict-desc" id="rationale">Loading AI evaluation...</div>
+      </div>
+
+      <div class="kpi-grid">
+        <div class="kpi-box">
+          <div class="kpi-label">Estimated CAPEX</div>
+          <div class="kpi-val" style="color: var(--primary);" id="kpi-capex">₹ 7,14,500</div>
+        </div>
+        <div class="kpi-box">
+          <div class="kpi-label">Annual Savings</div>
+          <div class="kpi-val" style="color: var(--success);" id="kpi-savings">₹ 1,08,799</div>
+        </div>
+        <div class="kpi-box">
+          <div class="kpi-label">Payback Period</div>
+          <div class="kpi-val" style="color: #fbbf24;" id="kpi-payback">7.3 Yrs</div>
+        </div>
+      </div>
+
+      <h3>Resource Suitability Ratings</h3>
+      <div class="score-bar-container" style="margin-top: 10px;">
+        <div class="score-header">
+          <span>☀️ Solar Resource Score</span>
+          <span id="score-solar-text">78.7 / 100</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="score-solar-bar" style="width: 78.7%; background: var(--accent-solar);"></div>
+        </div>
+      </div>
+
+      <div class="score-bar-container">
+        <div class="score-header">
+          <span>💨 Wind Resource Score</span>
+          <span id="score-wind-text">41.0 / 100</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="score-wind-bar" style="width: 41.0%; background: var(--accent-wind);"></div>
+        </div>
+      </div>
+
+      <div class="score-bar-container">
+        <div class="score-header">
+          <span>⛰️ Terrain & Slope Score</span>
+          <span id="score-terrain-text">90.0 / 100</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="score-terrain-bar" style="width: 90.0%; background: #a855f7;"></div>
+        </div>
+      </div>
+
+      <h3 style="margin-top: 16px;">Monthly Energy Yield Forecast (kWh)</h3>
+      <div class="chart-box">
+        <canvas id="generationChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Initialize Map with 100% Free, Keyless, Reliable World Tiles (OSM France / ESRI)
+    const map = L.map('map').setView([22.7196, 75.8577], 11);
+    
+    // OpenStreetMap France / Wikimedia tile servers: No API key, no watermark, fast, global
+    const streetTiles = L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
+      maxZoom: 20,
+      attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(map);
+
+    const satelliteTiles = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+      maxZoom: 19,
+      attribution: 'Tiles © Esri'
+    });
+
+    const topoTiles = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+      maxZoom: 17,
+      attribution: 'Map data: © OpenStreetMap, SRTM | Map style: © OpenTopoMap'
+    });
+
+    L.control.layers({
+      "Streets View": streetTiles,
+      "Satellite View": satelliteTiles,
+      "Topographic Terrain": topoTiles
+    }, null, { position: 'topright' }).addTo(map);
+
+    let marker = L.marker([22.7196, 75.8577], { draggable: true }).addTo(map);
+
+    function updateMarker(lat, lon) {
+      marker.setLatLng([lat, lon]);
+      map.panTo([lat, lon]);
+      document.getElementById('lat').value = lat.toFixed(4);
+      document.getElementById('lon').value = lon.toFixed(4);
+    }
+
+    map.on('click', function(e) {
+      updateMarker(e.latlng.lat, e.latlng.lng);
+    });
+
+    marker.on('dragend', function(e) {
+      const pos = marker.getLatLng();
+      document.getElementById('lat').value = pos.lat.toFixed(4);
+      document.getElementById('lon').value = pos.lng.toFixed(4);
+    });
+
+    // Listen to manual typing in Latitude/Longitude input fields so the map moves live!
+    function syncMapFromInputs() {
+      const lat = parseFloat(document.getElementById('lat').value);
+      const lon = parseFloat(document.getElementById('lon').value);
+      if (!isNaN(lat) && !isNaN(lon) && lat >= -90 && lat <= 90 && lon >= -180 && lon <= 180) {
+        marker.setLatLng([lat, lon]);
+        map.panTo([lat, lon]);
+      }
+    }
+    document.getElementById('lat').addEventListener('input', syncMapFromInputs);
+    document.getElementById('lon').addEventListener('input', syncMapFromInputs);
+
+    // Chart.js init
+    let genChart = null;
+    function renderChart(solarMonthly, windMonthly) {
+      const ctx = document.getElementById('generationChart').getContext('2d');
+      const labels = ['Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'];
+      
+      if (genChart) genChart.destroy();
+      genChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: 'Solar PV (kWh)',
+              data: solarMonthly || [1500, 1600, 1650, 1550, 1700, 2400, 2450, 2600, 2150, 1400, 1900, 2000],
+              backgroundColor: 'rgba(245, 158, 11, 0.85)'
+            },
+            {
+              label: 'Wind Turbine (kWh)',
+              data: windMonthly || [35, 40, 45, 42, 38, 50, 75, 85, 80, 82, 80, 40],
+              backgroundColor: 'rgba(6, 182, 212, 0.85)'
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { labels: { color: '#cbd5e1' } } },
+          scales: {
+            x: { ticks: { color: '#94a3b8' }, grid: { display: false } },
+            y: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' } }
+          }
+        }
+      });
+    }
+
+    renderChart();
+
+    async function runAnalysis() {
+      const lat = parseFloat(document.getElementById('lat').value);
+      const lon = parseFloat(document.getElementById('lon').value);
+      const area = parseFloat(document.getElementById('area').value);
+      const consumption = parseFloat(document.getElementById('consumption').value);
+      const tariff = parseFloat(document.getElementById('tariff').value);
+      const freshNasa = document.getElementById('fetch-fresh') ? document.getElementById('fetch-fresh').checked : false;
+
+      const btn = document.querySelector('.btn-analyze');
+      btn.innerText = 'Calculating Optimization...';
+      btn.disabled = true;
+      document.getElementById('rationale').innerText = 'Running satellite radiation & wind simulation...';
+
+      try {
+        const res = await fetch('http://127.0.0.1:8000/api/analyze-site', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            latitude: lat,
+            longitude: lon,
+            area_m2: area,
+            monthly_consumption_kwh: consumption,
+            tariff_inr_per_kwh: tariff,
+            fetch_fresh_satellite_data: freshNasa
+          })
+        });
+
+        if (!res.ok) throw new Error("API call failed: " + res.statusText);
+        const data = await res.json();
+
+        // Update UI
+        document.getElementById('verdict').innerText = data.recommendation.verdict;
+        document.getElementById('rationale').innerText = data.recommendation.explanation;
+        
+        document.getElementById('kpi-capex').innerText = '₹ ' + Number(data.recommendation.financial_summary.estimated_capex_inr).toLocaleString();
+        document.getElementById('kpi-savings').innerText = '₹ ' + Number(data.recommendation.financial_summary.annual_savings_inr).toLocaleString();
+        document.getElementById('kpi-payback').innerText = data.recommendation.financial_summary.payback_years + ' Yrs';
+
+        // Update Scores
+        const sScore = data.scores.solar_suitability_score;
+        const wScore = data.scores.wind_suitability_score;
+        const tScore = data.terrain.terrain_suitability_score;
+
+        document.getElementById('score-solar-text').innerText = sScore + ' / 100';
+        document.getElementById('score-solar-bar').style.width = sScore + '%';
+
+        document.getElementById('score-wind-text').innerText = wScore + ' / 100';
+        document.getElementById('score-wind-bar').style.width = wScore + '%';
+
+        document.getElementById('score-terrain-text').innerText = tScore + ' / 100';
+        document.getElementById('score-terrain-bar').style.width = tScore + '%';
+
+        renderChart(
+          data.energy_yield.solar_system.monthly_generation_kwh,
+          data.energy_yield.wind_system.monthly_generation_kwh
+        );
+
+      } catch (err) {
+        console.error("Analysis Error:", err);
+        alert("Backend connection error: Ensure FastAPI server is running on port 8000.");
+      } finally {
+        btn.innerText = 'Run Renewable Optimization';
+        btn.disabled = false;
+      }
+    }
+  </script>
+</body>
+</html>

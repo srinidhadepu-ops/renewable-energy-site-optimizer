@@ -1,0 +1,24 @@
+{
+    "tariff_per_kwh": 12.0,
+    "solar_financials": {
+        "capacity_kw": 17.14,
+        "estimated_capex": 857000.0,
+        "annual_opex": 12855.0,
+        "annual_savings": 174197.0,
+        "payback_period_years": 5.3,
+        "npv_25_year": 791156.0,
+        "lcoe_per_kwh": 1.65
+    },
+    "wind_financials": {
+        "capacity_kw": 4.0,
+        "estimated_capex": 380000.0,
+        "annual_opex": 11400.0,
+        "annual_savings": 136834.0,
+        "payback_period_years": 3.0
+    },
+    "hybrid_financials": {
+        "estimated_capex": 1237000.0,
+        "annual_savings": 311031.0,
+        "payback_period_years": 4.3
+    }
+}
