@@ -3,238 +3,1011 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Renewable Energy Site Optimizer (Solar & Wind AI)</title>
+  <title>Helios & Aeolus — Renewable Energy Optimizer</title>
+  <!-- Google Fonts: Plus Jakarta Sans & Outfit for modern clean typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
   <style>
     :root {
-      --bg: #0f172a;
-      --card-bg: #1e293b;
-      --text: #f8fafc;
-      --text-muted: #94a3b8;
-      --primary: #38bdf8;
-      --accent-solar: #f59e0b;
-      --accent-wind: #06b6d4;
-      --success: #10b981;
-      --border: #334155;
+      --bg-outer: #8da4a2;
+      --canvas-bg: #f8faf9;
+      --card-bg: #ffffff;
+      --card-soft: #f2f5f4;
+      --text-dark: #121817;
+      --text-muted: #647470;
+      --text-light: #94a3a0;
+      --border-soft: #e5ecea;
+      --accent-pill: #111615;
+      --solar-amber: #e69d00;
+      --solar-bg: #fff8eb;
+      --wind-teal: #0d9488;
+      --wind-bg: #f0fdfa;
+      --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.03);
+      --shadow-md: 0 12px 30px rgba(0, 0, 0, 0.06);
+      --radius-xl: 36px;
+      --radius-lg: 24px;
+      --radius-md: 16px;
+      --radius-sm: 10px;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { background: var(--bg); color: var(--text); padding: 20px; }
-    .header { text-align: center; margin-bottom: 24px; }
-    .header h1 { font-size: 2rem; color: #fff; margin-bottom: 6px; }
-    .header p { color: var(--text-muted); font-size: 1rem; }
-    
-    .grid-layout { display: grid; grid-template-columns: 1.1fr 1fr; gap: 20px; max-width: 1400px; margin: 0 auto; }
-    .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.3); }
-    .card h2 { font-size: 1.2rem; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
-    
-    #map { height: 380px; width: 100%; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 12px; }
-    
-    .form-group { margin-bottom: 14px; }
-    label { display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 4px; }
-    input { width: 100%; background: #0f172a; border: 1px solid var(--border); color: #fff; padding: 8px 12px; border-radius: 6px; font-size: 0.95rem; }
-    .inputs-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    
-    .btn-analyze {
-      width: 100%; background: linear-gradient(135deg, #0284c7, #0ea5e9); color: #fff; border: none;
-      padding: 12px; font-size: 1rem; font-weight: 600; border-radius: 8px; cursor: pointer; transition: all 0.2s;
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      background: linear-gradient(135deg, #7c9693 0%, #9cb2b0 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      color: var(--text-dark);
+    }
+
+    /* Main Hallmark Container Frame */
+    .app-canvas {
+      width: 100%;
+      max-width: 1420px;
+      background: var(--canvas-bg);
+      border-radius: var(--radius-xl);
+      box-shadow: 0 30px 90px rgba(0, 0, 0, 0.18);
+      display: flex;
+      overflow: hidden;
+      min-height: 860px;
+      border: 1px solid rgba(255, 255, 255, 0.6);
+    }
+
+    /* Modern Minimalist Sidebar */
+    .sidebar {
+      width: 84px;
+      background: #eff3f2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 32px 0 28px 0;
+      border-right: 1px solid var(--border-soft);
+      flex-shrink: 0;
+    }
+
+    .brand-logo {
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .nav-group {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .nav-btn {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: transparent;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .nav-btn:hover {
+      background: #e2e8e6;
+      color: var(--text-dark);
+    }
+
+    .nav-btn.active {
+      background: var(--accent-pill);
+      color: #ffffff;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Main Dashboard Workspace */
+    .main-workspace {
+      flex: 1;
+      padding: 28px 36px 36px 36px;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+      overflow-y: auto;
+    }
+
+    /* Top Map Hero Section */
+    .map-hero-card {
+      position: relative;
+      height: 440px;
+      background: #eef2f1;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-soft);
+    }
+
+    #map {
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+
+    /* Top Floating Filter & Search Bar */
+    .top-floating-bar {
+      position: absolute;
+      top: 18px;
+      left: 20px;
+      right: 20px;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      pointer-events: none;
+    }
+
+    .top-floating-bar > * {
+      pointer-events: auto;
+    }
+
+    .search-box {
+      flex: 1;
+      max-width: 380px;
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(12px);
+      border-radius: 100px;
+      padding: 10px 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: var(--shadow-md);
+      border: 1px solid rgba(255, 255, 255, 0.9);
+    }
+
+    .search-box input {
+      border: none;
+      background: transparent;
+      outline: none;
+      width: 100%;
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: var(--text-dark);
+    }
+
+    .filter-pills-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .filter-pill {
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(12px);
+      padding: 9px 18px;
+      border-radius: 100px;
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-dark);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: var(--shadow-sm);
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.2s;
+    }
+
+    .filter-pill:hover {
+      background: #ffffff;
+      transform: translateY(-1px);
+    }
+
+    .filter-pill select, .filter-pill input {
+      border: none;
+      background: transparent;
+      outline: none;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-dark);
+      cursor: pointer;
+    }
+
+    .run-action-pill {
+      background: var(--accent-pill);
+      color: #ffffff;
+      border: none;
+      border-radius: 100px;
+      padding: 10px 22px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      transition: all 0.2s;
+      margin-left: auto;
+    }
+
+    .run-action-pill:hover {
+      opacity: 0.92;
+      transform: translateY(-1px);
+    }
+
+    /* Floating Metric Badges on Map (Hallmark Design Spec) */
+    .map-badge-group {
+      position: absolute;
+      top: 52%;
+      left: 50%;
+      transform: translate(-50%, -100%);
+      display: flex;
+      align-items: center;
+      background: #000000;
+      border-radius: 18px;
+      padding: 6px;
+      color: #ffffff;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+      z-index: 1000;
+      pointer-events: none;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      animation: floatBadge 3s ease-in-out infinite alternate;
+    }
+
+    @keyframes floatBadge {
+      0% { transform: translate(-50%, -100%); }
+      100% { transform: translate(-50%, -106%); }
+    }
+
+    .badge-cell {
+      padding: 8px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .badge-cell:not(:last-child) {
+      border-right: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .badge-val {
+      font-size: 1.4rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      font-family: 'Outfit', sans-serif;
+    }
+
+    .badge-sub {
+      font-size: 0.7rem;
+      color: rgba(255, 255, 255, 0.6);
+      text-transform: capitalize;
+      margin-top: 2px;
+    }
+
+    .badge-pin-stem {
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 10px solid transparent;
+      border-right: 10px solid transparent;
+      border-top: 10px solid #000000;
+    }
+
+    /* Floating Support / Helper Pill Button */
+    .help-bubble-btn {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: #000000;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow-md);
+      cursor: pointer;
+      z-index: 1000;
+      transition: all 0.2s;
+    }
+
+    .help-bubble-btn:hover {
+      transform: scale(1.06);
+    }
+
+    /* Bottom 3-Card Grid System */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1.55fr 1fr 1fr;
+      gap: 22px;
+    }
+
+    .grid-panel {
+      background: var(--card-bg);
+      border-radius: var(--radius-lg);
+      padding: 26px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-soft);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    /* Card 1: Location & Parameter Analytics */
+    .panel-header-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .panel-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text-dark);
+      letter-spacing: -0.3px;
+    }
+
+    .panel-subtext {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .heart-icon {
+      color: #eab308;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* 3 Micro Spec Blocks */
+    .micro-metrics-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: auto;
+      margin-bottom: 6px;
+    }
+
+    .micro-box {
+      background: var(--card-soft);
+      border-radius: var(--radius-md);
+      padding: 16px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .micro-icon-badge {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+    }
+
+    .micro-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .micro-val {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--text-dark);
+      font-family: 'Outfit', sans-serif;
+    }
+
+    /* Card 2: Visual Recommendation Feature Card */
+    .hero-media-card {
+      padding: 0;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      border-radius: var(--radius-lg);
+      position: relative;
+    }
+
+    .hero-media-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    .media-card-overlay {
+      position: relative;
+      z-index: 2;
+      background: linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(18, 24, 23, 0.88) 100%);
+      height: 100%;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      color: #ffffff;
+    }
+
+    .system-pill-badge {
+      align-self: flex-start;
+      background: rgba(255, 255, 255, 0.22);
+      backdrop-filter: blur(10px);
+      padding: 6px 14px;
+      border-radius: 100px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .recommendation-title {
+      font-size: 1.45rem;
+      font-weight: 800;
+      line-height: 1.25;
+      margin-bottom: 8px;
+    }
+
+    .recommendation-desc {
+      font-size: 0.85rem;
+      color: rgba(255, 255, 255, 0.82);
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    /* Card 3: Renewable Community / Gauge Card */
+    .gauge-panel {
+      justify-content: space-between;
+    }
+
+    .avatar-stack-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .avatar-cluster {
+      display: flex;
+      align-items: center;
+    }
+
+    .avatar-circle {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 2px solid #ffffff;
+      margin-left: -8px;
+      object-fit: cover;
+    }
+
+    .avatar-circle:first-child {
+      margin-left: 0;
+    }
+
+    .semicircle-gauge-wrapper {
+      position: relative;
+      width: 100%;
+      max-width: 220px;
+      margin: 12px auto 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .gauge-canvas-container {
+      width: 200px;
+      height: 110px;
+      position: relative;
+    }
+
+    .gauge-center-text {
+      position: absolute;
+      bottom: 6px;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+    }
+
+    .gauge-big-num {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--text-dark);
+      font-family: 'Outfit', sans-serif;
+      line-height: 1;
+    }
+
+    .gauge-sub-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 3px;
+    }
+
+    .score-breakdown-row {
+      display: flex;
+      justify-content: space-around;
+      width: 100%;
+      padding-top: 14px;
+      border-top: 1px solid var(--border-soft);
       margin-top: 10px;
     }
-    .btn-analyze:hover { opacity: 0.9; transform: translateY(-1px); }
-    
-    .verdict-banner {
-      background: linear-gradient(135deg, #1e3a5f, #0f2b48); border: 2px solid var(--primary);
-      border-radius: 10px; padding: 18px; margin-bottom: 20px; text-align: center;
+
+    .score-tag-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
-    .verdict-title { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--primary); }
-    .verdict-name { font-size: 1.8rem; font-weight: 700; color: #fff; margin: 6px 0; }
-    .verdict-desc { font-size: 0.9rem; color: #cbd5e1; line-height: 1.4; }
-    
-    .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
-    .kpi-box { background: #0f172a; border: 1px solid var(--border); border-radius: 8px; padding: 12px; text-align: center; }
-    .kpi-label { font-size: 0.75rem; color: var(--text-muted); }
-    .kpi-val { font-size: 1.25rem; font-weight: 700; margin-top: 4px; }
-    
-    .score-bar-container { margin-bottom: 12px; }
-    .score-header { display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 4px; }
-    .progress-track { width: 100%; height: 10px; background: #334155; border-radius: 5px; overflow: hidden; }
-    .progress-fill { height: 100%; border-radius: 5px; transition: width 0.6s ease; }
-    
-    .chart-box { height: 220px; margin-top: 10px; }
+
+    .score-tag-val {
+      font-size: 1.05rem;
+      font-weight: 700;
+      font-family: 'Outfit', sans-serif;
+    }
+
+    .score-tag-name {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* Modal Sheet for Full Generation Breakdown & Chart */
+    .chart-drawer {
+      background: var(--card-bg);
+      border-radius: var(--radius-lg);
+      padding: 22px 26px;
+      border: 1px solid var(--border-soft);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .chart-drawer-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    .chart-canvas-box {
+      height: 180px;
+      width: 100%;
+    }
+
+    /* Custom Leaflet Map Pin styling for Hallmark aesthetic */
+    .custom-hallmark-pin {
+      width: 18px;
+      height: 18px;
+      background: #eab308;
+      border: 3px solid #ffffff;
+      border-radius: 50%;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    }
+
+    @media (max-width: 1100px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+      .app-canvas {
+        flex-direction: column;
+      }
+      .sidebar {
+        width: 100%;
+        height: 64px;
+        flex-direction: row;
+        padding: 0 24px;
+      }
+      .nav-group {
+        flex-direction: row;
+      }
+    }
   </style>
 </head>
 <body>
 
-  <div class="header">
-    <h1>Renewable Energy Site Optimizer</h1>
-    <p>Satellite Data & Machine Learning Decision Engine for Solar & Wind Power Installations</p>
-  </div>
+  <!-- App Canvas Card (Hallmark Minimalist UI) -->
+  <div class="app-canvas">
+    
+    <!-- Left Navigation Sidebar -->
+    <aside class="sidebar">
+      <div class="brand-logo" title="Helios & Aeolus Renewable Engine">
+        <!-- Minimal Geometric Flower Logo Icon -->
+        <svg width="34" height="34" viewBox="0 0 24 24" fill="none">
+          <circle cx="8" cy="8" r="4.5" fill="#121817"/>
+          <circle cx="16" cy="8" r="4.5" fill="#121817"/>
+          <circle cx="8" cy="16" r="4.5" fill="#121817"/>
+          <circle cx="16" cy="16" r="4.5" fill="#121817"/>
+        </svg>
+      </div>
 
-  <div class="grid-layout">
-    <!-- LEFT: MAP & LOCATION SELECTION -->
-    <div class="card">
-      <h2>📍 Site Geospatial Location</h2>
-      <div id="map"></div>
+      <div class="nav-group">
+        <button class="nav-btn active" title="Optimizer Map Dashboard">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+          </svg>
+        </button>
+        <button class="nav-btn" title="Add New Site" onclick="document.getElementById('search-input').focus()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <circle cx="12" cy="12" r="9"/>
+            <line x1="12" y1="8" x2="12" y2="16"/>
+            <line x1="8" y1="12" x2="16" y2="12"/>
+          </svg>
+        </button>
+        <button class="nav-btn" title="Saved Reports" onclick="toggleReportDrawer()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/>
+            <line x1="16" y1="17" x2="8" y2="17"/>
+          </svg>
+        </button>
+        <button class="nav-btn" title="Energy Charts" onclick="toggleReportDrawer()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <rect x="2" y="2" width="20" height="20" rx="5"/>
+            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="nav-group">
+        <button class="nav-btn" title="System Settings">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+        </button>
+        <button class="nav-btn" style="background: #111615; color: #fff; width: 38px; height: 38px;" title="User Profile">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+          </svg>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Workspace -->
+    <main class="main-workspace">
       
-      <div class="inputs-row">
-        <div class="form-group">
-          <label>Latitude</label>
-          <input type="number" step="0.0001" id="lat" value="22.7196">
+      <!-- HERO MAP COMPONENT -->
+      <div class="map-hero-card">
+        <div id="map"></div>
+
+        <!-- Floating Search & Pill Filters Header (Hallmark Style) -->
+        <div class="top-floating-bar">
+          <div class="search-box">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" color="#94a3b8">
+              <circle cx="11" cy="11" r="8"/>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            <input type="text" id="search-input" placeholder="Search any city or coordinates..." value="Indore, Madhya Pradesh">
+          </div>
+
+          <div class="filter-pills-row">
+            <div class="filter-pill">
+              <span>Area:</span>
+              <input type="number" id="input-area" value="100" style="width: 48px;" min="10" step="5">
+              <span>m²</span>
+            </div>
+            <div class="filter-pill">
+              <span>Usage:</span>
+              <input type="number" id="input-cons" value="500" style="width: 48px;" min="50" step="25">
+              <span>kWh</span>
+            </div>
+            <div class="filter-pill">
+              <span>Tariff:</span>
+              <input type="number" id="input-tariff" value="7.5" style="width: 38px;" min="1" step="0.5">
+              <span>₹/u</span>
+            </div>
+          </div>
+
+          <button class="run-action-pill" onclick="executeSiteOptimization()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polygon points="5 3 19 12 5 21 5 3"/>
+            </svg>
+            <span>Optimize Site</span>
+          </button>
         </div>
-        <div class="form-group">
-          <label>Longitude</label>
-          <input type="number" step="0.0001" id="lon" value="75.8577">
+
+        <!-- Floating Hallmark Pill Badge (Anchored above active coordinate pin) -->
+        <div class="map-badge-group">
+          <div class="badge-cell">
+            <div class="badge-val" id="badge-capacity">14.3 kW</div>
+            <div class="badge-sub">Optimal Capacity</div>
+          </div>
+          <div class="badge-cell">
+            <div class="badge-val" id="badge-savings">₹ 108,799</div>
+            <div class="badge-sub">Annual Bill Savings</div>
+          </div>
+          <div class="badge-cell">
+            <div class="badge-val" id="badge-payback">7.3 Y</div>
+            <div class="badge-sub">Simple Payback</div>
+          </div>
+          <div class="badge-pin-stem"></div>
+        </div>
+
+        <!-- Help Query Bubble -->
+        <div class="help-bubble-btn" title="About Solar & Wind Sizing Model" onclick="alert('The engine calculates GHI solar radiation from Copernicus & NASA satellites and computes wind shear power curves integrated across 8,760 hours.')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+            <line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
         </div>
       </div>
 
-      <div class="inputs-row">
-        <div class="form-group">
-          <label>Usable Area (m²)</label>
-          <input type="number" id="area" value="100">
+      <!-- BOTTOM 3-PANEL INFORMATION CARDS (Direct Hallmark Replica) -->
+      <div class="dashboard-grid">
+        
+        <!-- Panel 1: Location & Site Micro-Metrics -->
+        <div class="grid-panel">
+          <div class="panel-header-row">
+            <div>
+              <div class="panel-title" id="disp-location-title">Central Plains Site</div>
+              <div class="panel-subtext" id="disp-coord-sub">22.7196° N, 75.8577° E • Open Land</div>
+            </div>
+            <div class="heart-icon" title="Save this location">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+              </svg>
+            </div>
+          </div>
+
+          <div class="micro-metrics-row">
+            <div class="micro-box">
+              <div class="micro-icon-badge">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                  <polyline points="9 22 9 12 15 12 15 22"/>
+                </svg>
+              </div>
+              <div class="micro-label">Elevation</div>
+              <div class="micro-val" id="disp-elevation">550m</div>
+            </div>
+
+            <div class="micro-box">
+              <div class="micro-icon-badge">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2"/>
+                </svg>
+              </div>
+              <div class="micro-label">Mean Wind</div>
+              <div class="micro-val" id="disp-windspeed">3.7 m/s</div>
+            </div>
+
+            <div class="micro-box">
+              <div class="micro-icon-badge">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <circle cx="12" cy="12" r="5"/>
+                  <line x1="12" y1="1" x2="12" y2="3"/>
+                  <line x1="12" y1="21" x2="12" y2="23"/>
+                  <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                  <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                </svg>
+              </div>
+              <div class="micro-label">Solar GHI</div>
+              <div class="micro-val" id="disp-ghi">5.21</div>
+            </div>
+          </div>
         </div>
-        <div class="form-group">
-          <label>Monthly Consumption (kWh)</label>
-          <input type="number" id="consumption" value="500">
+
+        <!-- Panel 2: Visual Recommendation Card -->
+        <div class="grid-panel hero-media-card">
+          <!-- Unsplash high-res architectural solar/wind installation image -->
+          <img id="rec-image-bg" src="https://images.unsplash.com/photo-1508873696983-2df570464756?auto=format&fit=crop&w=800&q=80" alt="Renewable Installation">
+          
+          <div class="media-card-overlay">
+            <div class="system-pill-badge" id="rec-badge-type">Recommended System</div>
+            <div class="recommendation-title" id="rec-title">Rooftop Solar PV</div>
+            <div class="recommendation-desc" id="rec-rationale">
+              Location benefits from optimal solar radiation (5.21 kWh/m²/day) with high economic returns and rapid capital recovery.
+            </div>
+          </div>
+        </div>
+
+        <!-- Panel 3: Renewable Siting Viability Gauge & Breakdown -->
+        <div class="grid-panel gauge-panel">
+          <div class="avatar-stack-row">
+            <div>
+              <div class="panel-title" style="font-size: 1.15rem;">Siting Index</div>
+              <div class="panel-subtext">Composite feasibility</div>
+            </div>
+            <div class="avatar-cluster">
+              <img class="avatar-circle" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80" alt="Avatar">
+              <img class="avatar-circle" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=120&q=80" alt="Avatar">
+              <img class="avatar-circle" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=120&q=80" alt="Avatar">
+            </div>
+          </div>
+
+          <!-- Semicircular Radial Gauge (Hallmark Style) -->
+          <div class="semicircle-gauge-wrapper">
+            <div class="gauge-canvas-container">
+              <canvas id="gaugeCanvas"></canvas>
+            </div>
+            <div class="gauge-center-text">
+              <div class="gauge-big-num" id="gauge-score-num">82.4</div>
+              <div class="gauge-sub-label">Suitability Score</div>
+            </div>
+          </div>
+
+          <div class="score-breakdown-row">
+            <div class="score-tag-item">
+              <div class="score-tag-val" style="color: var(--solar-amber);" id="mini-solar-score">78.7</div>
+              <div class="score-tag-name">Solar (0-100)</div>
+            </div>
+            <div class="score-tag-item">
+              <div class="score-tag-val" style="color: var(--wind-teal);" id="mini-wind-score">41.0</div>
+              <div class="score-tag-name">Wind (0-100)</div>
+            </div>
+            <div class="score-tag-item">
+              <div class="score-tag-val" style="color: #8b5cf6;" id="mini-terrain-score">92.0</div>
+              <div class="score-tag-name">Terrain</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Monthly Yield Drawer (Expandable) -->
+      <div class="chart-drawer" id="chart-drawer">
+        <div class="chart-drawer-header">
+          <div>
+            <div class="panel-title" style="font-size: 1.1rem;">12-Month Generation Forecast (kWh)</div>
+            <div class="panel-subtext">Estimated monthly solar photovoltaic vs wind turbine energy output</div>
+          </div>
+          <div style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted);" id="annual-total-yield">
+            Annual Total: 23,013 kWh
+          </div>
+        </div>
+        <div class="chart-canvas-box">
+          <canvas id="generationChart"></canvas>
         </div>
       </div>
 
-      <div class="form-group">
-        <label>Electricity Tariff (₹ / kWh)</label>
-        <input type="number" step="0.1" id="tariff" value="7.5">
-      </div>
-
-      <button class="btn-analyze" onclick="runAnalysis()">Run Renewable Optimization</button>
-    </div>
-
-    <!-- RIGHT: DASHBOARD & AI RECOMMENDATION -->
-    <div class="card">
-      <h2>🎯 Decision & Techno-Economics</h2>
-
-      <div class="verdict-banner">
-        <div class="verdict-title">System Recommendation</div>
-        <div class="verdict-name" id="verdict">Rooftop / Ground Solar PV</div>
-        <div class="verdict-desc" id="rationale">Loading AI evaluation...</div>
-      </div>
-
-      <div class="kpi-grid">
-        <div class="kpi-box">
-          <div class="kpi-label">Estimated CAPEX</div>
-          <div class="kpi-val" style="color: var(--primary);" id="kpi-capex">₹ 7,14,500</div>
-        </div>
-        <div class="kpi-box">
-          <div class="kpi-label">Annual Savings</div>
-          <div class="kpi-val" style="color: var(--success);" id="kpi-savings">₹ 1,08,799</div>
-        </div>
-        <div class="kpi-box">
-          <div class="kpi-label">Payback Period</div>
-          <div class="kpi-val" style="color: #fbbf24;" id="kpi-payback">7.3 Yrs</div>
-        </div>
-      </div>
-
-      <h3>Resource Suitability Ratings</h3>
-      <div class="score-bar-container" style="margin-top: 10px;">
-        <div class="score-header">
-          <span>☀️ Solar Resource Score</span>
-          <span id="score-solar-text">78.7 / 100</span>
-        </div>
-        <div class="progress-track">
-          <div class="progress-fill" id="score-solar-bar" style="width: 78.7%; background: var(--accent-solar);"></div>
-        </div>
-      </div>
-
-      <div class="score-bar-container">
-        <div class="score-header">
-          <span>💨 Wind Resource Score</span>
-          <span id="score-wind-text">41.0 / 100</span>
-        </div>
-        <div class="progress-track">
-          <div class="progress-fill" id="score-wind-bar" style="width: 41.0%; background: var(--accent-wind);"></div>
-        </div>
-      </div>
-
-      <div class="score-bar-container">
-        <div class="score-header">
-          <span>⛰️ Terrain & Slope Score</span>
-          <span id="score-terrain-text">90.0 / 100</span>
-        </div>
-        <div class="progress-track">
-          <div class="progress-fill" id="score-terrain-bar" style="width: 90.0%; background: #a855f7;"></div>
-        </div>
-      </div>
-
-      <h3 style="margin-top: 16px;">Monthly Energy Yield Forecast (kWh)</h3>
-      <div class="chart-box">
-        <canvas id="generationChart"></canvas>
-      </div>
-    </div>
+    </main>
   </div>
 
   <script>
-    // Initialize Map with 100% Free, Keyless, Reliable World Tiles (OSM France / ESRI)
-    const map = L.map('map').setView([22.7196, 75.8577], 11);
-    
-    // OpenStreetMap France / Wikimedia tile servers: No API key, no watermark, fast, global
-    const streetTiles = L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
-      maxZoom: 20,
-      attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    // 1. Initialize Map with clean minimal cartography
+    const map = L.map('map', {
+      zoomControl: false,
+      attributionControl: false
+    }).setView([22.7196, 75.8577], 11);
+
+    // Free OpenStreetMap France clean tiles (no watermark, no api key required)
+    const baseTiles = L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
+      maxZoom: 20
     }).addTo(map);
 
-    const satelliteTiles = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-      maxZoom: 19,
-      attribution: 'Tiles © Esri'
+    // Custom Hallmark Circle Pin
+    const customIcon = L.divIcon({
+      className: 'custom-hallmark-pin',
+      iconSize: [18, 18],
+      iconAnchor: [9, 9]
     });
 
-    const topoTiles = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
-      maxZoom: 17,
-      attribution: 'Map data: © OpenStreetMap, SRTM | Map style: © OpenTopoMap'
-    });
+    let activeMarker = L.marker([22.7196, 75.8577], {
+      icon: customIcon,
+      draggable: true
+    }).addTo(map);
 
-    L.control.layers({
-      "Streets View": streetTiles,
-      "Satellite View": satelliteTiles,
-      "Topographic Terrain": topoTiles
-    }, null, { position: 'topright' }).addTo(map);
+    let currentLat = 22.7196;
+    let currentLon = 75.8577;
 
-    let marker = L.marker([22.7196, 75.8577], { draggable: true }).addTo(map);
-
-    function updateMarker(lat, lon) {
-      marker.setLatLng([lat, lon]);
+    function movePin(lat, lon) {
+      currentLat = lat;
+      currentLon = lon;
+      activeMarker.setLatLng([lat, lon]);
       map.panTo([lat, lon]);
-      document.getElementById('lat').value = lat.toFixed(4);
-      document.getElementById('lon').value = lon.toFixed(4);
+      document.getElementById('disp-coord-sub').innerText = `${lat.toFixed(4)}° N, ${lon.toFixed(4)}° E • Site Point`;
     }
 
-    map.on('click', function(e) {
-      updateMarker(e.latlng.lat, e.latlng.lng);
+    map.on('click', (e) => {
+      movePin(e.latlng.lat, e.latlng.lng);
+      executeSiteOptimization();
     });
 
-    marker.on('dragend', function(e) {
-      const pos = marker.getLatLng();
-      document.getElementById('lat').value = pos.lat.toFixed(4);
-      document.getElementById('lon').value = pos.lng.toFixed(4);
+    activeMarker.on('dragend', (e) => {
+      const pos = activeMarker.getLatLng();
+      movePin(pos.lat, pos.lng);
+      executeSiteOptimization();
     });
 
-    // Listen to manual typing in Latitude/Longitude input fields so the map moves live!
-    function syncMapFromInputs() {
-      const lat = parseFloat(document.getElementById('lat').value);
-      const lon = parseFloat(document.getElementById('lon').value);
-      if (!isNaN(lat) && !isNaN(lon) && lat >= -90 && lat <= 90 && lon >= -180 && lon <= 180) {
-        marker.setLatLng([lat, lon]);
-        map.panTo([lat, lon]);
+    // Search bar geocoding lookup
+    document.getElementById('search-input').addEventListener('keydown', async (e) => {
+      if (e.key === 'Enter') {
+        const query = e.target.value.trim();
+        if (!query) return;
+
+        // Check if query is coordinates "lat, lon"
+        if (query.includes(',')) {
+          const parts = query.split(',').map(s => parseFloat(s.trim()));
+          if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
+            movePin(parts[0], parts[1]);
+            executeSiteOptimization();
+            return;
+          }
+        }
+
+        // OpenStreetMap Nominatim Geocoding
+        try {
+          const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`);
+          const results = await res.json();
+          if (results.length > 0) {
+            const hit = results[0];
+            document.getElementById('disp-location-title').innerText = hit.name || hit.display_name.split(',')[0];
+            movePin(parseFloat(hit.lat), parseFloat(hit.lon));
+            map.setZoom(12);
+            executeSiteOptimization();
+          }
+        } catch (err) {
+          console.warn("Geocoding lookup error:", err);
+        }
       }
-    }
-    document.getElementById('lat').addEventListener('input', syncMapFromInputs);
-    document.getElementById('lon').addEventListener('input', syncMapFromInputs);
+    });
 
-    // Chart.js init
-    let genChart = null;
-    function renderChart(solarMonthly, windMonthly) {
+    // 2. Semicircle Radial Gauge Chart
+    let gaugeChart = null;
+    function renderGauge(score) {
+      const ctx = document.getElementById('gaugeCanvas').getContext('2d');
+      if (gaugeChart) gaugeChart.destroy();
+
+      gaugeChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          datasets: [{
+            data: [score, 100 - score],
+            backgroundColor: ['#e69d00', '#e5ecea'],
+            borderWidth: 0,
+            circumference: 180,
+            rotation: 270
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: '80%',
+          plugins: { tooltip: { enabled: false }, legend: { display: false } }
+        }
+      });
+      document.getElementById('gauge-score-num').innerText = Number(score).toFixed(1);
+    }
+    renderGauge(82.4);
+
+    // 3. Generation Forecast Bar Chart
+    let forecastChart = null;
+    function renderGenerationChart(solarMonthly, windMonthly) {
       const ctx = document.getElementById('generationChart').getContext('2d');
       const labels = ['Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'];
-      
-      if (genChart) genChart.destroy();
-      genChart = new Chart(ctx, {
+
+      if (forecastChart) forecastChart.destroy();
+      forecastChart = new Chart(ctx, {
         type: 'bar',
         data: {
           labels: labels,
@@ -242,92 +1015,125 @@
             {
               label: 'Solar PV (kWh)',
               data: solarMonthly || [1500, 1600, 1650, 1550, 1700, 2400, 2450, 2600, 2150, 1400, 1900, 2000],
-              backgroundColor: 'rgba(245, 158, 11, 0.85)'
+              backgroundColor: '#e69d00',
+              borderRadius: 6
             },
             {
               label: 'Wind Turbine (kWh)',
               data: windMonthly || [35, 40, 45, 42, 38, 50, 75, 85, 80, 82, 80, 40],
-              backgroundColor: 'rgba(6, 182, 212, 0.85)'
+              backgroundColor: '#0d9488',
+              borderRadius: 6
             }
           ]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          plugins: { legend: { labels: { color: '#cbd5e1' } } },
+          plugins: {
+            legend: {
+              position: 'top',
+              align: 'end',
+              labels: {
+                boxWidth: 12,
+                font: { family: 'Plus Jakarta Sans', weight: '600', size: 11 }
+              }
+            }
+          },
           scales: {
-            x: { ticks: { color: '#94a3b8' }, grid: { display: false } },
-            y: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' } }
+            x: { grid: { display: false }, ticks: { font: { family: 'Plus Jakarta Sans', size: 10 } } },
+            y: { grid: { color: '#f0f4f3' }, ticks: { font: { family: 'Plus Jakarta Sans', size: 10 } } }
           }
         }
       });
     }
+    renderGenerationChart();
 
-    renderChart();
+    function toggleReportDrawer() {
+      const el = document.getElementById('chart-drawer');
+      el.scrollIntoView({ behavior: 'smooth' });
+    }
 
-    async function runAnalysis() {
-      const lat = parseFloat(document.getElementById('lat').value);
-      const lon = parseFloat(document.getElementById('lon').value);
-      const area = parseFloat(document.getElementById('area').value);
-      const consumption = parseFloat(document.getElementById('consumption').value);
-      const tariff = parseFloat(document.getElementById('tariff').value);
-      const freshNasa = document.getElementById('fetch-fresh') ? document.getElementById('fetch-fresh').checked : false;
+    // 4. API Pipeline Integration
+    async function executeSiteOptimization() {
+      const area = parseFloat(document.getElementById('input-area').value) || 100;
+      const cons = parseFloat(document.getElementById('input-cons').value) || 500;
+      const tariff = parseFloat(document.getElementById('input-tariff').value) || 7.5;
 
-      const btn = document.querySelector('.btn-analyze');
-      btn.innerText = 'Calculating Optimization...';
-      btn.disabled = true;
-      document.getElementById('rationale').innerText = 'Running satellite radiation & wind simulation...';
+      const btn = document.querySelector('.run-action-pill');
+      btn.innerHTML = `<span>Simulating...</span>`;
+      btn.style.opacity = '0.7';
 
       try {
         const res = await fetch('http://127.0.0.1:8000/api/analyze-site', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            latitude: lat,
-            longitude: lon,
+            latitude: currentLat,
+            longitude: currentLon,
             area_m2: area,
-            monthly_consumption_kwh: consumption,
-            tariff_inr_per_kwh: tariff,
-            fetch_fresh_satellite_data: freshNasa
+            monthly_consumption_kwh: cons,
+            tariff_inr_per_kwh: tariff
           })
         });
 
-        if (!res.ok) throw new Error("API call failed: " + res.statusText);
+        if (!res.ok) throw new Error("Optimization API request failed");
         const data = await res.json();
 
-        // Update UI
-        document.getElementById('verdict').innerText = data.recommendation.verdict;
-        document.getElementById('rationale').innerText = data.recommendation.explanation;
-        
-        document.getElementById('kpi-capex').innerText = '₹ ' + Number(data.recommendation.financial_summary.estimated_capex_inr).toLocaleString();
-        document.getElementById('kpi-savings').innerText = '₹ ' + Number(data.recommendation.financial_summary.annual_savings_inr).toLocaleString();
-        document.getElementById('kpi-payback').innerText = data.recommendation.financial_summary.payback_years + ' Yrs';
+        // 1. Update Floating Badges on Map
+        const recCap = data.recommendation.recommended_capacity;
+        const totalCap = (recCap.solar_kw + recCap.wind_kw).toFixed(1);
+        document.getElementById('badge-capacity').innerText = `${totalCap} kW`;
+        document.getElementById('badge-savings').innerText = `₹ ${Number(data.recommendation.financial_summary.annual_savings_inr).toLocaleString()}`;
+        document.getElementById('badge-payback').innerText = `${data.recommendation.financial_summary.payback_years} Y`;
 
-        // Update Scores
+        // 2. Update Location Panel
+        document.getElementById('disp-elevation').innerText = `${Math.round(data.terrain.elevation_meters)}m`;
+        document.getElementById('disp-windspeed').innerText = `${data.scores.wind_details.mean_speed_10m_ms} m/s`;
+        document.getElementById('disp-ghi').innerText = `${data.scores.solar_details.annual_avg_ghi_kwh_m2_day}`;
+
+        // 3. Update Recommendation Card
+        const verdict = data.recommendation.verdict;
+        document.getElementById('rec-title').innerText = verdict;
+        document.getElementById('rec-badge-type').innerText = verdict.includes("Hybrid") ? "Hybrid Recommended" : verdict.includes("Wind") ? "Wind Preferred" : "Solar PV Preferred";
+        document.getElementById('rec-rationale').innerText = data.recommendation.explanation;
+
+        // Dynamic Unsplash Architecture Images depending on system verdict
+        const imgBg = document.getElementById('rec-image-bg');
+        if (verdict.includes("Wind Turbine")) {
+          imgBg.src = "https://images.unsplash.com/photo-1466611653911-95081537e5b7?auto=format&fit=crop&w=800&q=80"; // Modern wind turbine
+        } else if (verdict.includes("Hybrid")) {
+          imgBg.src = "https://images.unsplash.com/photo-1548337138-e87d889cc369?auto=format&fit=crop&w=800&q=80"; // Solar + wind installation
+        } else {
+          imgBg.src = "https://images.unsplash.com/photo-1508873696983-2df570464756?auto=format&fit=crop&w=800&q=80"; // Solar architectural roof
+        }
+
+        // 4. Update Siting Index & Gauge
         const sScore = data.scores.solar_suitability_score;
         const wScore = data.scores.wind_suitability_score;
         const tScore = data.terrain.terrain_suitability_score;
+        document.getElementById('mini-solar-score').innerText = sScore.toFixed(1);
+        document.getElementById('mini-wind-score').innerText = wScore.toFixed(1);
+        document.getElementById('mini-terrain-score').innerText = tScore.toFixed(0);
 
-        document.getElementById('score-solar-text').innerText = sScore + ' / 100';
-        document.getElementById('score-solar-bar').style.width = sScore + '%';
+        const compositeScore = Math.max(sScore, wScore) * 0.7 + Math.min(sScore, wScore) * 0.2 + (tScore * 0.1);
+        renderGauge(compositeScore);
 
-        document.getElementById('score-wind-text').innerText = wScore + ' / 100';
-        document.getElementById('score-wind-bar').style.width = wScore + '%';
-
-        document.getElementById('score-terrain-text').innerText = tScore + ' / 100';
-        document.getElementById('score-terrain-bar').style.width = tScore + '%';
-
-        renderChart(
+        // 5. Update Forecast Bar Chart
+        renderGenerationChart(
           data.energy_yield.solar_system.monthly_generation_kwh,
           data.energy_yield.wind_system.monthly_generation_kwh
         );
+        document.getElementById('annual-total-yield').innerText = `Annual Total: ${Number(data.energy_yield.hybrid_system.annual_generation_kwh).toLocaleString()} kWh`;
 
       } catch (err) {
-        console.error("Analysis Error:", err);
-        alert("Backend connection error: Ensure FastAPI server is running on port 8000.");
+        console.error("Optimization failed:", err);
       } finally {
-        btn.innerText = 'Run Renewable Optimization';
-        btn.disabled = false;
+        btn.innerHTML = `
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polygon points="5 3 19 12 5 21 5 3"/>
+          </svg>
+          <span>Optimize Site</span>`;
+        btn.style.opacity = '1';
       }
     }
   </script>
