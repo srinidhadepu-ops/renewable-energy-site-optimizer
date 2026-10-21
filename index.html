@@ -4,11 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Helios & Aeolus — Renewable Energy Optimizer</title>
-  <!-- Google Fonts: Plus Jakarta Sans & Outfit for modern clean typography -->
+  
+  <!-- Modern Clean Typography -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
   
+  <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -25,15 +27,13 @@
       --border-soft: #e5ecea;
       --accent-pill: #111615;
       --solar-amber: #e69d00;
-      --solar-bg: #fff8eb;
       --wind-teal: #0d9488;
-      --wind-bg: #f0fdfa;
       --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.03);
       --shadow-md: 0 12px 30px rgba(0, 0, 0, 0.06);
-      --radius-xl: 36px;
-      --radius-lg: 24px;
-      --radius-md: 16px;
-      --radius-sm: 10px;
+      --radius-xl: 32px;
+      --radius-lg: 22px;
+      --radius-md: 14px;
+      --radius-sm: 8px;
     }
 
     * {
@@ -44,61 +44,70 @@
       -webkit-font-smoothing: antialiased;
     }
 
+    /* Outer Viewport Container (Perfect 100vh Fit, No Horizontal Scrolling) */
     body {
       background: linear-gradient(135deg, #7c9693 0%, #9cb2b0 100%);
-      min-height: 100vh;
+      height: 100vh;
+      width: 100vw;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 24px;
+      padding: 16px;
+      overflow: hidden;
       color: var(--text-dark);
     }
 
-    /* Main Hallmark Container Frame */
+    /* Main Hallmark Card Shell */
     .app-canvas {
       width: 100%;
-      max-width: 1420px;
+      max-width: 1380px;
+      height: 100%;
+      max-height: 94vh;
       background: var(--canvas-bg);
       border-radius: var(--radius-xl);
-      box-shadow: 0 30px 90px rgba(0, 0, 0, 0.18);
+      box-shadow: 0 25px 80px rgba(0, 0, 0, 0.2);
       display: flex;
       overflow: hidden;
-      min-height: 860px;
       border: 1px solid rgba(255, 255, 255, 0.6);
+      position: relative;
     }
 
-    /* Modern Minimalist Sidebar */
+    /* Left Minimalist Sidebar */
     .sidebar {
-      width: 84px;
+      width: 76px;
       background: #eff3f2;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: space-between;
-      padding: 32px 0 28px 0;
+      padding: 24px 0 20px 0;
       border-right: 1px solid var(--border-soft);
       flex-shrink: 0;
+      z-index: 20;
     }
 
     .brand-logo {
-      width: 44px;
-      height: 44px;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
+      transition: transform 0.25s ease;
+    }
+
+    .brand-logo:hover {
+      transform: scale(1.08) rotate(15deg);
     }
 
     .nav-group {
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 14px;
       align-items: center;
     }
 
     .nav-btn {
-      width: 48px;
-      height: 48px;
+      width: 44px;
+      height: 44px;
       border-radius: 50%;
       background: transparent;
       border: none;
@@ -118,28 +127,31 @@
     .nav-btn.active {
       background: var(--accent-pill);
       color: #ffffff;
-      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
     }
 
-    /* Main Dashboard Workspace */
+    /* Main Content Workspace */
     .main-workspace {
       flex: 1;
-      padding: 28px 36px 36px 36px;
+      padding: 20px 28px 24px 28px;
       display: flex;
       flex-direction: column;
-      gap: 22px;
+      gap: 16px;
       overflow-y: auto;
+      height: 100%;
     }
 
     /* Top Map Hero Section */
     .map-hero-card {
       position: relative;
-      height: 440px;
+      height: 42%;
+      min-height: 280px;
       background: #eef2f1;
       border-radius: var(--radius-lg);
       overflow: hidden;
       box-shadow: var(--shadow-sm);
       border: 1px solid var(--border-soft);
+      flex-shrink: 0;
     }
 
     #map {
@@ -151,13 +163,13 @@
     /* Top Floating Filter & Search Bar */
     .top-floating-bar {
       position: absolute;
-      top: 18px;
-      left: 20px;
-      right: 20px;
+      top: 14px;
+      left: 16px;
+      right: 16px;
       z-index: 1000;
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       pointer-events: none;
     }
 
@@ -167,14 +179,14 @@
 
     .search-box {
       flex: 1;
-      max-width: 380px;
-      background: rgba(255, 255, 255, 0.94);
+      max-width: 320px;
+      background: rgba(255, 255, 255, 0.95);
       backdrop-filter: blur(12px);
       border-radius: 100px;
-      padding: 10px 18px;
+      padding: 8px 16px;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
       box-shadow: var(--shadow-md);
       border: 1px solid rgba(255, 255, 255, 0.9);
     }
@@ -184,48 +196,40 @@
       background: transparent;
       outline: none;
       width: 100%;
-      font-size: 0.95rem;
+      font-size: 0.88rem;
       font-weight: 500;
       color: var(--text-dark);
     }
 
     .filter-pills-row {
       display: flex;
-      gap: 10px;
+      gap: 8px;
       flex-wrap: wrap;
     }
 
     .filter-pill {
       background: rgba(255, 255, 255, 0.92);
       backdrop-filter: blur(12px);
-      padding: 9px 18px;
+      padding: 8px 14px;
       border-radius: 100px;
-      border: 1px solid rgba(255, 255, 255, 0.8);
-      font-size: 0.85rem;
+      border: 1px solid rgba(255, 255, 255, 0.85);
+      font-size: 0.82rem;
       font-weight: 600;
       color: var(--text-dark);
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
       box-shadow: var(--shadow-sm);
-      cursor: pointer;
-      user-select: none;
-      transition: all 0.2s;
     }
 
-    .filter-pill:hover {
-      background: #ffffff;
-      transform: translateY(-1px);
-    }
-
-    .filter-pill select, .filter-pill input {
+    .filter-pill input {
       border: none;
       background: transparent;
       outline: none;
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       font-weight: 600;
       color: var(--text-dark);
-      cursor: pointer;
+      text-align: center;
     }
 
     .run-action-pill {
@@ -233,92 +237,63 @@
       color: #ffffff;
       border: none;
       border-radius: 100px;
-      padding: 10px 22px;
-      font-size: 0.9rem;
+      padding: 9px 20px;
+      font-size: 0.85rem;
       font-weight: 600;
       display: flex;
       align-items: center;
       gap: 8px;
       cursor: pointer;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
       transition: all 0.2s;
       margin-left: auto;
     }
 
     .run-action-pill:hover {
-      opacity: 0.92;
+      opacity: 0.9;
       transform: translateY(-1px);
     }
 
-    /* Floating Metric Badges on Map (Hallmark Design Spec) */
-    .map-badge-group {
+    /* Map Type Switcher Floating Widget */
+    .map-switcher-pill {
       position: absolute;
-      top: 52%;
-      left: 50%;
-      transform: translate(-50%, -100%);
+      top: 14px;
+      right: 16px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 100px;
+      padding: 4px;
       display: flex;
-      align-items: center;
-      background: #000000;
-      border-radius: 18px;
-      padding: 6px;
-      color: #ffffff;
-      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+      gap: 4px;
       z-index: 1000;
-      pointer-events: none;
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      animation: floatBadge 3s ease-in-out infinite alternate;
+      box-shadow: var(--shadow-md);
+      border: 1px solid rgba(255, 255, 255, 0.8);
     }
 
-    @keyframes floatBadge {
-      0% { transform: translate(-50%, -100%); }
-      100% { transform: translate(-50%, -106%); }
+    .layer-btn {
+      padding: 6px 12px;
+      border-radius: 100px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s;
     }
 
-    .badge-cell {
-      padding: 8px 20px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
+    .layer-btn.active {
+      background: var(--accent-pill);
+      color: #ffffff;
     }
 
-    .badge-cell:not(:last-child) {
-      border-right: 1px solid rgba(255, 255, 255, 0.15);
-    }
-
-    .badge-val {
-      font-size: 1.4rem;
-      font-weight: 800;
-      letter-spacing: -0.5px;
-      font-family: 'Outfit', sans-serif;
-    }
-
-    .badge-sub {
-      font-size: 0.7rem;
-      color: rgba(255, 255, 255, 0.6);
-      text-transform: capitalize;
-      margin-top: 2px;
-    }
-
-    .badge-pin-stem {
-      position: absolute;
-      bottom: -10px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 0;
-      height: 0;
-      border-left: 10px solid transparent;
-      border-right: 10px solid transparent;
-      border-top: 10px solid #000000;
-    }
-
-    /* Floating Support / Helper Pill Button */
+    /* Floating Help Info Bubble */
     .help-bubble-btn {
       position: absolute;
-      bottom: 20px;
-      right: 20px;
-      width: 44px;
-      height: 44px;
+      bottom: 14px;
+      right: 16px;
+      width: 38px;
+      height: 38px;
       border-radius: 50%;
       background: #000000;
       color: #ffffff;
@@ -338,14 +313,16 @@
     /* Bottom 3-Card Grid System */
     .dashboard-grid {
       display: grid;
-      grid-template-columns: 1.55fr 1fr 1fr;
-      gap: 22px;
+      grid-template-columns: 1.35fr 1.1fr 1fr;
+      gap: 16px;
+      flex: 1;
+      min-height: 220px;
     }
 
     .grid-panel {
       background: var(--card-bg);
       border-radius: var(--radius-lg);
-      padding: 26px;
+      padding: 20px;
       box-shadow: var(--shadow-sm);
       border: 1px solid var(--border-soft);
       display: flex;
@@ -353,57 +330,53 @@
       position: relative;
     }
 
-    /* Card 1: Location & Parameter Analytics */
+    /* Card 1: Location & Site Metrics */
     .panel-header-row {
       display: flex;
       align-items: flex-start;
       justify-content: space-between;
-      margin-bottom: 20px;
+      margin-bottom: 14px;
     }
 
     .panel-title {
-      font-size: 1.25rem;
+      font-size: 1.15rem;
       font-weight: 700;
       color: var(--text-dark);
       letter-spacing: -0.3px;
     }
 
     .panel-subtext {
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       color: var(--text-muted);
-      margin-top: 4px;
+      margin-top: 3px;
     }
 
     .heart-icon {
       color: #eab308;
       cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
     }
 
     /* 3 Micro Spec Blocks */
     .micro-metrics-row {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
+      gap: 10px;
       margin-top: auto;
-      margin-bottom: 6px;
     }
 
     .micro-box {
       background: var(--card-soft);
       border-radius: var(--radius-md);
-      padding: 16px 14px;
+      padding: 12px 10px;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 6px;
     }
 
     .micro-icon-badge {
-      width: 32px;
-      height: 32px;
-      border-radius: 8px;
+      width: 28px;
+      height: 28px;
+      border-radius: 7px;
       background: #ffffff;
       display: flex;
       align-items: center;
@@ -412,19 +385,19 @@
     }
 
     .micro-label {
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       color: var(--text-muted);
       font-weight: 500;
     }
 
     .micro-val {
-      font-size: 1.35rem;
+      font-size: 1.25rem;
       font-weight: 800;
       color: var(--text-dark);
       font-family: 'Outfit', sans-serif;
     }
 
-    /* Card 2: Visual Recommendation Feature Card */
+    /* Card 2: Visual Recommendation Feature Card (Clean Embedded Vector Art - 100% Reliable, No Broken Links) */
     .hero-media-card {
       padding: 0;
       overflow: hidden;
@@ -434,21 +407,24 @@
       position: relative;
     }
 
-    .hero-media-card img {
+    .media-card-art {
       width: 100%;
       height: 100%;
-      object-fit: cover;
       position: absolute;
       top: 0;
       left: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.5s ease;
     }
 
     .media-card-overlay {
       position: relative;
       z-index: 2;
-      background: linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(18, 24, 23, 0.88) 100%);
+      background: linear-gradient(180deg, rgba(18, 24, 23, 0.15) 0%, rgba(18, 24, 23, 0.88) 100%);
       height: 100%;
-      padding: 24px;
+      padding: 20px;
       display: flex;
       flex-direction: column;
       justify-content: flex-end;
@@ -457,90 +433,79 @@
 
     .system-pill-badge {
       align-self: flex-start;
-      background: rgba(255, 255, 255, 0.22);
+      background: rgba(255, 255, 255, 0.24);
       backdrop-filter: blur(10px);
-      padding: 6px 14px;
+      padding: 5px 12px;
       border-radius: 100px;
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 10px;
+      letter-spacing: 0.8px;
+      margin-bottom: 8px;
       border: 1px solid rgba(255, 255, 255, 0.3);
     }
 
     .recommendation-title {
-      font-size: 1.45rem;
+      font-size: 1.35rem;
       font-weight: 800;
-      line-height: 1.25;
-      margin-bottom: 8px;
+      line-height: 1.2;
+      margin-bottom: 6px;
     }
 
     .recommendation-desc {
-      font-size: 0.85rem;
-      color: rgba(255, 255, 255, 0.82);
-      line-height: 1.4;
+      font-size: 0.8rem;
+      color: rgba(255, 255, 255, 0.86);
+      line-height: 1.35;
       display: -webkit-box;
       -webkit-line-clamp: 3;
       -webkit-box-orient: vertical;
       overflow: hidden;
     }
 
-    /* Card 3: Renewable Community / Gauge Card */
+    /* Card 3: Siting Index & Clean Energy Mix Gauge */
     .gauge-panel {
       justify-content: space-between;
     }
 
-    .avatar-stack-row {
+    .energy-mix-tags-row {
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      gap: 6px;
     }
 
-    .avatar-cluster {
-      display: flex;
-      align-items: center;
-    }
-
-    .avatar-circle {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      border: 2px solid #ffffff;
-      margin-left: -8px;
-      object-fit: cover;
-    }
-
-    .avatar-circle:first-child {
-      margin-left: 0;
+    .energy-tag {
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 100px;
     }
 
     .semicircle-gauge-wrapper {
       position: relative;
       width: 100%;
-      max-width: 220px;
-      margin: 12px auto 0 auto;
+      max-width: 200px;
+      margin: 4px auto 0 auto;
       display: flex;
       flex-direction: column;
       align-items: center;
     }
 
     .gauge-canvas-container {
-      width: 200px;
-      height: 110px;
+      width: 180px;
+      height: 96px;
       position: relative;
     }
 
     .gauge-center-text {
       position: absolute;
-      bottom: 6px;
+      bottom: 4px;
       left: 50%;
       transform: translateX(-50%);
       text-align: center;
     }
 
     .gauge-big-num {
-      font-size: 1.8rem;
+      font-size: 1.6rem;
       font-weight: 800;
       color: var(--text-dark);
       font-family: 'Outfit', sans-serif;
@@ -548,18 +513,18 @@
     }
 
     .gauge-sub-label {
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       color: var(--text-muted);
-      margin-top: 3px;
+      margin-top: 2px;
     }
 
     .score-breakdown-row {
       display: flex;
       justify-content: space-around;
       width: 100%;
-      padding-top: 14px;
+      padding-top: 10px;
       border-top: 1px solid var(--border-soft);
-      margin-top: 10px;
+      margin-top: 6px;
     }
 
     .score-tag-item {
@@ -569,81 +534,128 @@
     }
 
     .score-tag-val {
-      font-size: 1.05rem;
+      font-size: 0.95rem;
       font-weight: 700;
       font-family: 'Outfit', sans-serif;
     }
 
     .score-tag-name {
-      font-size: 0.7rem;
+      font-size: 0.68rem;
       color: var(--text-muted);
       margin-top: 2px;
     }
 
-    /* Modal Sheet for Full Generation Breakdown & Chart */
+    /* 12-Month Generation Drawer */
     .chart-drawer {
       background: var(--card-bg);
       border-radius: var(--radius-lg);
-      padding: 22px 26px;
+      padding: 18px 22px;
       border: 1px solid var(--border-soft);
       box-shadow: var(--shadow-sm);
+      flex-shrink: 0;
     }
 
     .chart-drawer-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 14px;
+      margin-bottom: 10px;
     }
 
     .chart-canvas-box {
-      height: 180px;
+      height: 130px;
       width: 100%;
     }
 
-    /* Custom Leaflet Map Pin styling for Hallmark aesthetic */
+    /* Custom Hallmark Circle Pin */
     .custom-hallmark-pin {
-      width: 18px;
-      height: 18px;
+      width: 16px;
+      height: 16px;
       background: #eab308;
       border: 3px solid #ffffff;
       border-radius: 50%;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.35);
+      cursor: pointer;
     }
 
-    @media (max-width: 1100px) {
+    /* Responsive Adaptation (Mobile, Tablet, Laptop, Large Desktop) */
+    @media (max-width: 1180px) {
       .dashboard-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr 1fr;
+      }
+      .gauge-panel {
+        grid-column: span 2;
+      }
+    }
+
+    @media (max-width: 860px) {
+      body {
+        padding: 0;
+        height: auto;
+        min-height: 100vh;
+        overflow-y: auto;
       }
       .app-canvas {
+        max-height: none;
+        height: auto;
+        border-radius: 0;
         flex-direction: column;
       }
       .sidebar {
         width: 100%;
-        height: 64px;
+        height: 60px;
         flex-direction: row;
-        padding: 0 24px;
+        padding: 0 18px;
       }
       .nav-group {
         flex-direction: row;
+      }
+      .main-workspace {
+        padding: 16px;
+        height: auto;
+      }
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+      .gauge-panel {
+        grid-column: span 1;
+      }
+      .map-hero-card {
+        height: 340px;
+      }
+      .top-floating-bar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .search-box {
+        max-width: none;
+      }
+      .run-action-pill {
+        margin-left: 0;
+        width: 100%;
+        justify-content: center;
       }
     }
   </style>
 </head>
 <body>
 
-  <!-- App Canvas Card (Hallmark Minimalist UI) -->
+  <!-- App Canvas Frame -->
   <div class="app-canvas">
     
     <!-- Left Navigation Sidebar -->
     <aside class="sidebar">
-      <div class="brand-logo" title="Helios & Aeolus Renewable Engine">
-        <!-- Minimal Geometric Flower Logo Icon -->
-        <svg width="34" height="34" viewBox="0 0 24 24" fill="none">
-          <circle cx="8" cy="8" r="4.5" fill="#121817"/>
-          <circle cx="16" cy="8" r="4.5" fill="#121817"/>
-          <circle cx="8" cy="16" r="4.5" fill="#121817"/>
-          <circle cx="16" cy="16" r="4.5" fill="#121817"/>
+      <!-- Unique, Simple, Modern Sun-Turbine Hybrid Logo -->
+      <div class="brand-logo" title="Helios & Aeolus (Solar & Wind Optimizer)">
+        <svg width="36" height="36" viewBox="0 0 40 40" fill="none">
+          <!-- Sun Core Disc -->
+          <circle cx="20" cy="20" r="8" fill="#e69d00"/>
+          <!-- Aeolus Wind Turbine Blades overlapping Helios Sun -->
+          <path d="M20 12C20 6 24 3 24 3C24 3 24 9 20 12Z" fill="#121817"/>
+          <path d="M13.07 24C7.88 27 5.28 29.8 5.28 29.8C5.28 29.8 10.48 27.8 13.07 24Z" fill="#121817"/>
+          <path d="M26.93 24C32.12 27 34.72 29.8 34.72 29.8C34.72 29.8 29.52 27.8 26.93 24Z" fill="#121817"/>
+          <!-- Center Hub Dot -->
+          <circle cx="20" cy="20" r="3.2" fill="#ffffff"/>
         </svg>
       </div>
 
@@ -653,14 +665,14 @@
             <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
           </svg>
         </button>
-        <button class="nav-btn" title="Add New Site" onclick="document.getElementById('search-input').focus()">
+        <button class="nav-btn" title="Add / Search New Site" onclick="document.getElementById('search-input').focus()">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
             <circle cx="12" cy="12" r="9"/>
             <line x1="12" y1="8" x2="12" y2="16"/>
             <line x1="8" y1="12" x2="16" y2="12"/>
           </svg>
         </button>
-        <button class="nav-btn" title="Saved Reports" onclick="toggleReportDrawer()">
+        <button class="nav-btn" title="Saved Forecast Reports" onclick="toggleReportDrawer()">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
             <polyline points="14 2 14 8 20 8"/>
@@ -668,11 +680,12 @@
             <line x1="16" y1="17" x2="8" y2="17"/>
           </svg>
         </button>
-        <button class="nav-btn" title="Energy Charts" onclick="toggleReportDrawer()">
+        <button class="nav-btn" title="Toggle Generation Chart" onclick="toggleReportDrawer()">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-            <rect x="2" y="2" width="20" height="20" rx="5"/>
-            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
-            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+            <rect x="2" y="2" width="20" height="20" rx="4"/>
+            <line x1="6" y1="16" x2="6" y2="12"/>
+            <line x1="12" y1="16" x2="12" y2="8"/>
+            <line x1="18" y1="16" x2="18" y2="10"/>
           </svg>
         </button>
       </div>
@@ -684,8 +697,8 @@
             <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
           </svg>
         </button>
-        <button class="nav-btn" style="background: #111615; color: #fff; width: 38px; height: 38px;" title="User Profile">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+        <button class="nav-btn" style="background: #111615; color: #fff; width: 36px; height: 36px;" title="User Profile">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
             <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
           </svg>
         </button>
@@ -695,66 +708,56 @@
     <!-- Main Workspace -->
     <main class="main-workspace">
       
-      <!-- HERO MAP COMPONENT -->
+      <!-- HERO MAP SECTION -->
       <div class="map-hero-card">
         <div id="map"></div>
 
-        <!-- Floating Search & Pill Filters Header (Hallmark Style) -->
+        <!-- Floating Search & Pill Filters Header -->
         <div class="top-floating-bar">
           <div class="search-box">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" color="#94a3b8">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" color="#94a3b8">
               <circle cx="11" cy="11" r="8"/>
               <line x1="21" y1="21" x2="16.65" y2="16.65"/>
             </svg>
-            <input type="text" id="search-input" placeholder="Search any city or coordinates..." value="Indore, Madhya Pradesh">
+            <input type="text" id="search-input" placeholder="Search city or lat, lon..." value="Indore, Madhya Pradesh">
           </div>
 
           <div class="filter-pills-row">
             <div class="filter-pill">
               <span>Area:</span>
-              <input type="number" id="input-area" value="100" style="width: 48px;" min="10" step="5">
+              <input type="number" id="input-area" value="100" style="width: 44px;" min="10" step="5">
               <span>m²</span>
             </div>
             <div class="filter-pill">
               <span>Usage:</span>
-              <input type="number" id="input-cons" value="500" style="width: 48px;" min="50" step="25">
+              <input type="number" id="input-cons" value="500" style="width: 44px;" min="50" step="25">
               <span>kWh</span>
             </div>
             <div class="filter-pill">
               <span>Tariff:</span>
-              <input type="number" id="input-tariff" value="7.5" style="width: 38px;" min="1" step="0.5">
+              <input type="number" id="input-tariff" value="7.5" style="width: 36px;" min="1" step="0.5">
               <span>₹/u</span>
             </div>
           </div>
 
           <button class="run-action-pill" onclick="executeSiteOptimization()">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
               <polygon points="5 3 19 12 5 21 5 3"/>
             </svg>
             <span>Optimize Site</span>
           </button>
         </div>
 
-        <!-- Floating Hallmark Pill Badge (Anchored above active coordinate pin) -->
-        <div class="map-badge-group">
-          <div class="badge-cell">
-            <div class="badge-val" id="badge-capacity">14.3 kW</div>
-            <div class="badge-sub">Optimal Capacity</div>
-          </div>
-          <div class="badge-cell">
-            <div class="badge-val" id="badge-savings">₹ 108,799</div>
-            <div class="badge-sub">Annual Bill Savings</div>
-          </div>
-          <div class="badge-cell">
-            <div class="badge-val" id="badge-payback">7.3 Y</div>
-            <div class="badge-sub">Simple Payback</div>
-          </div>
-          <div class="badge-pin-stem"></div>
+        <!-- Floating Multi-Map Type Switcher (Streets, Satellite, Topography) -->
+        <div class="map-switcher-pill">
+          <button class="layer-btn active" id="btn-layer-streets" onclick="switchMapLayer('streets')">Streets</button>
+          <button class="layer-btn" id="btn-layer-satellite" onclick="switchMapLayer('satellite')">Satellite</button>
+          <button class="layer-btn" id="btn-layer-topo" onclick="switchMapLayer('topo')">Terrain</button>
         </div>
 
-        <!-- Help Query Bubble -->
-        <div class="help-bubble-btn" title="About Solar & Wind Sizing Model" onclick="alert('The engine calculates GHI solar radiation from Copernicus & NASA satellites and computes wind shear power curves integrated across 8,760 hours.')">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
+        <!-- Help Tooltip Bubble -->
+        <div class="help-bubble-btn" title="About Solar & Wind Optimization Model" onclick="alert('Helios & Aeolus calculates solar GHI irradiance from NASA/Copernicus and integrates 8,760 hours of wind shear data to find the optimal clean energy mix.')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
             <circle cx="12" cy="12" r="10"/>
             <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
             <line x1="12" y1="17" x2="12.01" y2="17"/>
@@ -762,7 +765,7 @@
         </div>
       </div>
 
-      <!-- BOTTOM 3-PANEL INFORMATION CARDS (Direct Hallmark Replica) -->
+      <!-- BOTTOM 3-PANEL INFORMATION CARDS -->
       <div class="dashboard-grid">
         
         <!-- Panel 1: Location & Site Micro-Metrics -->
@@ -770,10 +773,10 @@
           <div class="panel-header-row">
             <div>
               <div class="panel-title" id="disp-location-title">Central Plains Site</div>
-              <div class="panel-subtext" id="disp-coord-sub">22.7196° N, 75.8577° E • Open Land</div>
+              <div class="panel-subtext" id="disp-coord-sub">22.7196° N, 75.8577° E • Site Point</div>
             </div>
-            <div class="heart-icon" title="Save this location">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <div class="heart-icon" title="Bookmark location">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
               </svg>
             </div>
@@ -782,9 +785,8 @@
           <div class="micro-metrics-row">
             <div class="micro-box">
               <div class="micro-icon-badge">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
                   <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-                  <polyline points="9 22 9 12 15 12 15 22"/>
                 </svg>
               </div>
               <div class="micro-label">Elevation</div>
@@ -793,7 +795,7 @@
 
             <div class="micro-box">
               <div class="micro-icon-badge">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
                   <path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2"/>
                 </svg>
               </div>
@@ -803,12 +805,10 @@
 
             <div class="micro-box">
               <div class="micro-icon-badge">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
                   <circle cx="12" cy="12" r="5"/>
                   <line x1="12" y1="1" x2="12" y2="3"/>
                   <line x1="12" y1="21" x2="12" y2="23"/>
-                  <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
-                  <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
                 </svg>
               </div>
               <div class="micro-label">Solar GHI</div>
@@ -817,42 +817,59 @@
           </div>
         </div>
 
-        <!-- Panel 2: Visual Recommendation Card -->
+        <!-- Panel 2: Visual Recommendation Feature Card (Embedded Clean SVG Graphic: 100% Guaranteed to Render) -->
         <div class="grid-panel hero-media-card">
-          <!-- Unsplash high-res architectural solar/wind installation image -->
-          <img id="rec-image-bg" src="https://images.unsplash.com/photo-1508873696983-2df570464756?auto=format&fit=crop&w=800&q=80" alt="Renewable Installation">
+          <!-- Dynamic High-End Architectural Vector Art of Solar/Wind -->
+          <div class="media-card-art" id="rec-vector-art">
+            <!-- Default Solar Architectural Art -->
+            <svg width="100%" height="100%" viewBox="0 0 400 240" preserveAspectRatio="xMidYMid slice" fill="none">
+              <rect width="400" height="240" fill="#243430"/>
+              <!-- Radiant Sun -->
+              <circle cx="280" cy="50" r="38" fill="#e69d00" opacity="0.85"/>
+              <circle cx="280" cy="50" r="55" stroke="#e69d00" stroke-width="1.5" stroke-dasharray="4 4" opacity="0.4"/>
+              <!-- Mountain / Horizon silhouette -->
+              <path d="M0 160 L120 100 L260 170 L340 120 L400 150 L400 240 L0 240 Z" fill="#1b2825"/>
+              <!-- Solar PV Array Grid Lines -->
+              <polygon points="40,210 160,170 240,195 90,240" fill="#0d9488" opacity="0.75"/>
+              <line x1="40" y1="210" x2="160" y2="170" stroke="#ffffff" stroke-width="1" opacity="0.6"/>
+              <line x1="60" y1="220" x2="185" y2="178" stroke="#ffffff" stroke-width="1" opacity="0.4"/>
+              <line x1="80" y1="230" x2="212" y2="187" stroke="#ffffff" stroke-width="1" opacity="0.4"/>
+              <line x1="100" y1="190" x2="115" y2="225" stroke="#ffffff" stroke-width="1" opacity="0.4"/>
+              <line x1="160" y1="170" x2="175" y2="208" stroke="#ffffff" stroke-width="1" opacity="0.4"/>
+            </svg>
+          </div>
           
           <div class="media-card-overlay">
-            <div class="system-pill-badge" id="rec-badge-type">Recommended System</div>
-            <div class="recommendation-title" id="rec-title">Rooftop Solar PV</div>
+            <div class="system-pill-badge" id="rec-badge-type">Solar PV Preferred</div>
+            <div class="recommendation-title" id="rec-title">Rooftop / Ground Solar PV</div>
             <div class="recommendation-desc" id="rec-rationale">
-              Location benefits from optimal solar radiation (5.21 kWh/m²/day) with high economic returns and rapid capital recovery.
+              Solar radiation is strong (5.21 kWh/m²/day) with rapid capital payback. Local wind speeds are below small turbine baseline.
             </div>
           </div>
         </div>
 
-        <!-- Panel 3: Renewable Siting Viability Gauge & Breakdown -->
+        <!-- Panel 3: Siting Index & Clean Energy Mix Gauge -->
         <div class="grid-panel gauge-panel">
-          <div class="avatar-stack-row">
+          <div class="panel-header-row" style="margin-bottom: 0;">
             <div>
-              <div class="panel-title" style="font-size: 1.15rem;">Siting Index</div>
+              <div class="panel-title" style="font-size: 1.05rem;">Siting Index</div>
               <div class="panel-subtext">Composite feasibility</div>
             </div>
-            <div class="avatar-cluster">
-              <img class="avatar-circle" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80" alt="Avatar">
-              <img class="avatar-circle" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=120&q=80" alt="Avatar">
-              <img class="avatar-circle" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=120&q=80" alt="Avatar">
+            <!-- Relevant Clean Energy Tags (Replacing Person Photos) -->
+            <div class="energy-mix-tags-row">
+              <span class="energy-tag" style="background: #fff8eb; color: #b45309;">☀️ Solar</span>
+              <span class="energy-tag" style="background: #f0fdfa; color: #0f766e;">💨 Wind</span>
             </div>
           </div>
 
-          <!-- Semicircular Radial Gauge (Hallmark Style) -->
+          <!-- Semicircular Radial Gauge -->
           <div class="semicircle-gauge-wrapper">
             <div class="gauge-canvas-container">
               <canvas id="gaugeCanvas"></canvas>
             </div>
             <div class="gauge-center-text">
               <div class="gauge-big-num" id="gauge-score-num">82.4</div>
-              <div class="gauge-sub-label">Suitability Score</div>
+              <div class="gauge-sub-label">Feasibility Score</div>
             </div>
           </div>
 
@@ -874,14 +891,14 @@
 
       </div>
 
-      <!-- Monthly Yield Drawer (Expandable) -->
+      <!-- 12-Month Generation Drawer -->
       <div class="chart-drawer" id="chart-drawer">
         <div class="chart-drawer-header">
           <div>
-            <div class="panel-title" style="font-size: 1.1rem;">12-Month Generation Forecast (kWh)</div>
-            <div class="panel-subtext">Estimated monthly solar photovoltaic vs wind turbine energy output</div>
+            <div class="panel-title" style="font-size: 1.05rem;">12-Month Generation Forecast (kWh)</div>
+            <div class="panel-subtext">Solar Photovoltaic vs Wind Turbine monthly energy yield breakdown</div>
           </div>
-          <div style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted);" id="annual-total-yield">
+          <div style="font-size: 0.82rem; font-weight: 700; color: var(--text-dark);" id="annual-total-yield">
             Annual Total: 23,013 kWh
           </div>
         </div>
@@ -894,22 +911,43 @@
   </div>
 
   <script>
-    // 1. Initialize Map with clean minimal cartography
+    // 1. Multi-Layer Leaflet Map Setup (Streets, Satellite, Topography)
     const map = L.map('map', {
       zoomControl: false,
       attributionControl: false
     }).setView([22.7196, 75.8577], 11);
 
-    // Free OpenStreetMap France clean tiles (no watermark, no api key required)
-    const baseTiles = L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
-      maxZoom: 20
-    }).addTo(map);
+    // Free, Keyless, Reliable World Tile Layers
+    const streetLayer = L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', { maxZoom: 20 }).addTo(map);
+    const satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { maxZoom: 19 });
+    const topoLayer = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', { maxZoom: 17 });
 
-    // Custom Hallmark Circle Pin
+    function switchMapLayer(layerType) {
+      map.removeLayer(streetLayer);
+      map.removeLayer(satelliteLayer);
+      map.removeLayer(topoLayer);
+
+      document.getElementById('btn-layer-streets').classList.remove('active');
+      document.getElementById('btn-layer-satellite').classList.remove('active');
+      document.getElementById('btn-layer-topo').classList.remove('active');
+
+      if (layerType === 'satellite') {
+        satelliteLayer.addTo(map);
+        document.getElementById('btn-layer-satellite').classList.add('active');
+      } else if (layerType === 'topo') {
+        topoLayer.addTo(map);
+        document.getElementById('btn-layer-topo').classList.add('active');
+      } else {
+        streetLayer.addTo(map);
+        document.getElementById('btn-layer-streets').classList.add('active');
+      }
+    }
+
+    // Custom Subtle Yellow Hallmark Circle Pin
     const customIcon = L.divIcon({
       className: 'custom-hallmark-pin',
-      iconSize: [18, 18],
-      iconAnchor: [9, 9]
+      iconSize: [16, 16],
+      iconAnchor: [8, 8]
     });
 
     let activeMarker = L.marker([22.7196, 75.8577], {
@@ -939,13 +977,12 @@
       executeSiteOptimization();
     });
 
-    // Search bar geocoding lookup
+    // Search bar geocoding / coordinate input
     document.getElementById('search-input').addEventListener('keydown', async (e) => {
       if (e.key === 'Enter') {
         const query = e.target.value.trim();
         if (!query) return;
 
-        // Check if query is coordinates "lat, lon"
         if (query.includes(',')) {
           const parts = query.split(',').map(s => parseFloat(s.trim()));
           if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
@@ -955,7 +992,6 @@
           }
         }
 
-        // OpenStreetMap Nominatim Geocoding
         try {
           const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`);
           const results = await res.json();
@@ -967,7 +1003,7 @@
             executeSiteOptimization();
           }
         } catch (err) {
-          console.warn("Geocoding lookup error:", err);
+          console.warn("Geocoding lookup note:", err);
         }
       }
     });
@@ -1016,13 +1052,13 @@
               label: 'Solar PV (kWh)',
               data: solarMonthly || [1500, 1600, 1650, 1550, 1700, 2400, 2450, 2600, 2150, 1400, 1900, 2000],
               backgroundColor: '#e69d00',
-              borderRadius: 6
+              borderRadius: 4
             },
             {
               label: 'Wind Turbine (kWh)',
               data: windMonthly || [35, 40, 45, 42, 38, 50, 75, 85, 80, 82, 80, 40],
               backgroundColor: '#0d9488',
-              borderRadius: 6
+              borderRadius: 4
             }
           ]
         },
@@ -1034,14 +1070,14 @@
               position: 'top',
               align: 'end',
               labels: {
-                boxWidth: 12,
-                font: { family: 'Plus Jakarta Sans', weight: '600', size: 11 }
+                boxWidth: 10,
+                font: { family: 'Plus Jakarta Sans', weight: '600', size: 10 }
               }
             }
           },
           scales: {
-            x: { grid: { display: false }, ticks: { font: { family: 'Plus Jakarta Sans', size: 10 } } },
-            y: { grid: { color: '#f0f4f3' }, ticks: { font: { family: 'Plus Jakarta Sans', size: 10 } } }
+            x: { grid: { display: false }, ticks: { font: { family: 'Plus Jakarta Sans', size: 9 } } },
+            y: { grid: { color: '#f0f4f3' }, ticks: { font: { family: 'Plus Jakarta Sans', size: 9 } } }
           }
         }
       });
@@ -1051,6 +1087,64 @@
     function toggleReportDrawer() {
       const el = document.getElementById('chart-drawer');
       el.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Dynamic Artwork Generator for Recommendation Card (Embedded Vector Art)
+    function renderRecommendationArt(verdict) {
+      const artContainer = document.getElementById('rec-vector-art');
+      if (verdict.includes("Wind Turbine")) {
+        artContainer.innerHTML = `
+          <svg width="100%" height="100%" viewBox="0 0 400 240" preserveAspectRatio="xMidYMid slice" fill="none">
+            <rect width="400" height="240" fill="#1b2a32"/>
+            <path d="M0 170 Q150 140 400 170 L400 240 L0 240 Z" fill="#142026"/>
+            <!-- Wind Turbine Mast & Rotor -->
+            <line x1="280" y1="200" x2="280" y2="70" stroke="#cbd5e1" stroke-width="4"/>
+            <circle cx="280" cy="70" r="5" fill="#f8fafc"/>
+            <line x1="280" y1="70" x2="280" y2="25" stroke="#f8fafc" stroke-width="3" stroke-linecap="round"/>
+            <line x1="280" y1="70" x2="241" y2="92" stroke="#f8fafc" stroke-width="3" stroke-linecap="round"/>
+            <line x1="280" y1="70" x2="319" y2="92" stroke="#f8fafc" stroke-width="3" stroke-linecap="round"/>
+            <!-- Gust Streamlines -->
+            <path d="M60 60 Q120 40 220 50" stroke="#0d9488" stroke-width="2" stroke-dasharray="6 4" opacity="0.6"/>
+            <path d="M40 90 Q160 80 250 95" stroke="#0d9488" stroke-width="2.5" stroke-dasharray="8 5" opacity="0.8"/>
+            <path d="M80 120 Q180 110 320 120" stroke="#0d9488" stroke-width="1.5" stroke-dasharray="5 3" opacity="0.5"/>
+          </svg>
+        `;
+      } else if (verdict.includes("Hybrid")) {
+        artContainer.innerHTML = `
+          <svg width="100%" height="100%" viewBox="0 0 400 240" preserveAspectRatio="xMidYMid slice" fill="none">
+            <rect width="400" height="240" fill="#202d28"/>
+            <!-- Sun & Wind Flow Together -->
+            <circle cx="120" cy="65" r="32" fill="#e69d00" opacity="0.8"/>
+            <!-- Turbine on Hill -->
+            <path d="M0 160 Q200 120 400 165 L400 240 L0 240 Z" fill="#17221e"/>
+            <line x1="310" y1="180" x2="310" y2="75" stroke="#cbd5e1" stroke-width="3.5"/>
+            <circle cx="310" cy="75" r="4.5" fill="#f8fafc"/>
+            <line x1="310" y1="75" x2="310" y2="35" stroke="#f8fafc" stroke-width="2.5"/>
+            <line x1="310" y1="75" x2="275" y2="95" stroke="#f8fafc" stroke-width="2.5"/>
+            <line x1="310" y1="75" x2="345" y2="95" stroke="#f8fafc" stroke-width="2.5"/>
+            <!-- Solar PV Module -->
+            <polygon points="50,210 160,175 220,195 100,235" fill="#0d9488" opacity="0.75"/>
+            <line x1="50" y1="210" x2="160" y2="175" stroke="#ffffff" stroke-width="1" opacity="0.6"/>
+            <line x1="75" y1="218" x2="180" y2="182" stroke="#ffffff" stroke-width="1" opacity="0.4"/>
+          </svg>
+        `;
+      } else {
+        artContainer.innerHTML = `
+          <svg width="100%" height="100%" viewBox="0 0 400 240" preserveAspectRatio="xMidYMid slice" fill="none">
+            <rect width="400" height="240" fill="#243430"/>
+            <!-- Helios Sun -->
+            <circle cx="280" cy="50" r="38" fill="#e69d00" opacity="0.85"/>
+            <circle cx="280" cy="50" r="55" stroke="#e69d00" stroke-width="1.5" stroke-dasharray="4 4" opacity="0.4"/>
+            <!-- Horizon -->
+            <path d="M0 160 L120 100 L260 170 L340 120 L400 150 L400 240 L0 240 Z" fill="#1b2825"/>
+            <!-- Solar PV Array -->
+            <polygon points="40,210 160,170 240,195 90,240" fill="#0d9488" opacity="0.75"/>
+            <line x1="40" y1="210" x2="160" y2="170" stroke="#ffffff" stroke-width="1" opacity="0.6"/>
+            <line x1="60" y1="220" x2="185" y2="178" stroke="#ffffff" stroke-width="1" opacity="0.4"/>
+            <line x1="80" y1="230" x2="212" y2="187" stroke="#ffffff" stroke-width="1" opacity="0.4"/>
+          </svg>
+        `;
+      }
     }
 
     // 4. API Pipeline Integration
@@ -1079,35 +1173,19 @@
         if (!res.ok) throw new Error("Optimization API request failed");
         const data = await res.json();
 
-        // 1. Update Floating Badges on Map
-        const recCap = data.recommendation.recommended_capacity;
-        const totalCap = (recCap.solar_kw + recCap.wind_kw).toFixed(1);
-        document.getElementById('badge-capacity').innerText = `${totalCap} kW`;
-        document.getElementById('badge-savings').innerText = `₹ ${Number(data.recommendation.financial_summary.annual_savings_inr).toLocaleString()}`;
-        document.getElementById('badge-payback').innerText = `${data.recommendation.financial_summary.payback_years} Y`;
-
-        // 2. Update Location Panel
+        // 1. Update Location Panel
         document.getElementById('disp-elevation').innerText = `${Math.round(data.terrain.elevation_meters)}m`;
         document.getElementById('disp-windspeed').innerText = `${data.scores.wind_details.mean_speed_10m_ms} m/s`;
         document.getElementById('disp-ghi').innerText = `${data.scores.solar_details.annual_avg_ghi_kwh_m2_day}`;
 
-        // 3. Update Recommendation Card
+        // 2. Update Recommendation Card
         const verdict = data.recommendation.verdict;
         document.getElementById('rec-title').innerText = verdict;
         document.getElementById('rec-badge-type').innerText = verdict.includes("Hybrid") ? "Hybrid Recommended" : verdict.includes("Wind") ? "Wind Preferred" : "Solar PV Preferred";
         document.getElementById('rec-rationale').innerText = data.recommendation.explanation;
+        renderRecommendationArt(verdict);
 
-        // Dynamic Unsplash Architecture Images depending on system verdict
-        const imgBg = document.getElementById('rec-image-bg');
-        if (verdict.includes("Wind Turbine")) {
-          imgBg.src = "https://images.unsplash.com/photo-1466611653911-95081537e5b7?auto=format&fit=crop&w=800&q=80"; // Modern wind turbine
-        } else if (verdict.includes("Hybrid")) {
-          imgBg.src = "https://images.unsplash.com/photo-1548337138-e87d889cc369?auto=format&fit=crop&w=800&q=80"; // Solar + wind installation
-        } else {
-          imgBg.src = "https://images.unsplash.com/photo-1508873696983-2df570464756?auto=format&fit=crop&w=800&q=80"; // Solar architectural roof
-        }
-
-        // 4. Update Siting Index & Gauge
+        // 3. Update Siting Index & Gauge
         const sScore = data.scores.solar_suitability_score;
         const wScore = data.scores.wind_suitability_score;
         const tScore = data.terrain.terrain_suitability_score;
@@ -1118,7 +1196,7 @@
         const compositeScore = Math.max(sScore, wScore) * 0.7 + Math.min(sScore, wScore) * 0.2 + (tScore * 0.1);
         renderGauge(compositeScore);
 
-        // 5. Update Forecast Bar Chart
+        // 4. Update Forecast Bar Chart
         renderGenerationChart(
           data.energy_yield.solar_system.monthly_generation_kwh,
           data.energy_yield.wind_system.monthly_generation_kwh
@@ -1129,7 +1207,7 @@
         console.error("Optimization failed:", err);
       } finally {
         btn.innerHTML = `
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
             <polygon points="5 3 19 12 5 21 5 3"/>
           </svg>
           <span>Optimize Site</span>`;
