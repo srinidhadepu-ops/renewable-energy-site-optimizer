@@ -356,6 +356,49 @@
       cursor: pointer;
     }
 
+    /* Hallmark Black Pill Badge Container (Integrated cleanly inside Card 1) */
+    .hallmark-metrics-pill {
+      background: #111615;
+      border-radius: var(--radius-md);
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: #ffffff;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      margin-bottom: 12px;
+    }
+
+    .pill-cell {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .pill-cell:not(:last-child) {
+      border-right: 1px solid rgba(255, 255, 255, 0.14);
+    }
+
+    .pill-cell-val {
+      font-size: 1.18rem;
+      font-weight: 800;
+      letter-spacing: -0.4px;
+      font-family: 'Outfit', sans-serif;
+      color: #ffffff;
+    }
+
+    .pill-cell-label {
+      font-size: 0.65rem;
+      color: rgba(255, 255, 255, 0.65);
+      text-transform: capitalize;
+      margin-top: 2px;
+      font-weight: 500;
+    }
+
     /* 3 Micro Spec Blocks */
     .micro-metrics-row {
       display: grid;
@@ -367,10 +410,10 @@
     .micro-box {
       background: var(--card-soft);
       border-radius: var(--radius-md);
-      padding: 12px 10px;
+      padding: 10px 8px;
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 4px;
     }
 
     .micro-icon-badge {
@@ -782,6 +825,22 @@
             </div>
           </div>
 
+          <!-- Hallmark Black Metric Summary Pill (Cleanly fitted inside Card 1) -->
+          <div class="hallmark-metrics-pill">
+            <div class="pill-cell">
+              <div class="pill-cell-val" id="pill-capacity">14.3 kW</div>
+              <div class="pill-cell-label">Optimal Sizing</div>
+            </div>
+            <div class="pill-cell">
+              <div class="pill-cell-val" id="pill-savings">₹ 108,799</div>
+              <div class="pill-cell-label">Annual Savings</div>
+            </div>
+            <div class="pill-cell">
+              <div class="pill-cell-val" id="pill-payback">7.3 Y</div>
+              <div class="pill-cell-label">Payback</div>
+            </div>
+          </div>
+
           <div class="micro-metrics-row">
             <div class="micro-box">
               <div class="micro-icon-badge">
@@ -1173,7 +1232,13 @@
         if (!res.ok) throw new Error("Optimization API request failed");
         const data = await res.json();
 
-        // 1. Update Location Panel
+        // 1. Update Location Panel & Hallmark Black Pill Metrics
+        const recCap = data.recommendation.recommended_capacity;
+        const totalCap = (recCap.solar_kw + recCap.wind_kw).toFixed(1);
+        document.getElementById('pill-capacity').innerText = `${totalCap} kW`;
+        document.getElementById('pill-savings').innerText = `₹ ${Number(data.recommendation.financial_summary.annual_savings_inr).toLocaleString()}`;
+        document.getElementById('pill-payback').innerText = `${data.recommendation.financial_summary.payback_years} Y`;
+
         document.getElementById('disp-elevation').innerText = `${Math.round(data.terrain.elevation_meters)}m`;
         document.getElementById('disp-windspeed').innerText = `${data.scores.wind_details.mean_speed_10m_ms} m/s`;
         document.getElementById('disp-ghi').innerText = `${data.scores.solar_details.annual_avg_ghi_kwh_m2_day}`;
