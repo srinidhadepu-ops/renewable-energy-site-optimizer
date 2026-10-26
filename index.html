@@ -863,11 +863,11 @@
         <!-- Floating Search & Pill Filters Header (Phase 1 + Phase 2 Parameters) -->
         <div class="top-floating-bar">
           <div class="search-box">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" color="#94a3b8">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" color="#94a3b8" style="cursor: pointer;" onclick="handleSearchSubmit()" title="Click to search location or coordinates">
               <circle cx="11" cy="11" r="8"/>
               <line x1="21" y1="21" x2="16.65" y2="16.65"/>
             </svg>
-            <input type="text" id="search-input" placeholder="Search city or lat, lon..." value="Indore, Madhya Pradesh">
+            <input type="text" id="search-input" placeholder="Search city or lat, lon (e.g. 17.986, 79.519)..." value="Indore, Madhya Pradesh">
           </div>
 
           <div class="filter-pills-row">
@@ -883,22 +883,28 @@
               </select>
             </div>
 
-            <div class="filter-pill">
+            <div class="filter-pill" title="Available Area (m²)">
               <span>Area:</span>
-              <input type="number" id="input-area" value="120" style="width: 44px;" min="10" step="5">
+              <input type="number" id="input-area" value="120" style="width: 44px;" min="10" step="5" onchange="executeSiteOptimization()">
               <span>m²</span>
+            </div>
+
+            <div class="filter-pill" title="Monthly Electricity Consumption (kWh)">
+              <span>Use:</span>
+              <input type="number" id="input-cons" value="600" style="width: 40px;" min="50" step="25" onchange="executeSiteOptimization()">
+              <span>kWh</span>
             </div>
 
             <!-- Phase 2 BESS Autonomy Input -->
             <div class="filter-pill" title="BESS battery backup autonomy hours for night and blackout outage">
               <span style="color:var(--text-muted); font-size:0.72rem;">BESS:</span>
-              <input type="number" id="input-backup-hours" value="8" style="width: 28px;" min="2" max="24" step="1">
+              <input type="number" id="input-backup-hours" value="8" style="width: 28px;" min="2" max="24" step="1" onchange="executeSiteOptimization()">
               <span>h</span>
             </div>
 
             <div class="filter-pill" title="Electricity tariff per kWh">
               <span>₹:</span>
-              <input type="number" id="input-tariff" value="7.5" style="width: 36px;" min="1" step="0.5">
+              <input type="number" id="input-tariff" value="7.5" style="width: 36px;" min="1" step="0.5" onchange="executeSiteOptimization()">
               <span>/u</span>
             </div>
           </div>
@@ -1318,57 +1324,141 @@
     let currentLon = 75.8577;
     let regionalMarkers = [];
 
-    function movePin(lat, lon, label) {
+    // Robust coordinate parser supporting "lat, lon", "lat,lon", "lat lon", "lat; lon", etc.
+    function parseCoordinates(str) {
+      if (!str || typeof str !== 'string') return null;
+      const clean = str.replace(/[^\d.,;/\s\-+]/gi, ' ').trim();
+      const parts = clean.split(/[,;\s/|]+/).filter(Boolean);
+      if (parts.length >= 2) {
+        const lat = parseFloat(parts[0]);
+        const lon = parseFloat(parts[1]);
+        if (!isNaN(lat) && !isNaN(lon) && lat >= -90 && lat <= 90 && lon >= -180 && lon <= 180) {
+          return { lat, lon };
+        }
+      }
+      return null;
+    }
+
+    // Reverse geocode to resolve city/district/locality name
+    async function reverseGeocodeLocation(lat, lon) {
+      try {
+        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=14`, {
+          headers: { 'Accept': 'application/json' }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          const addr = data.address || {};
+          const city = addr.suburb || addr.city || addr.town || addr.village || addr.municipality || addr.state_district || addr.county;
+          const state = addr.state ? `, ${addr.state}` : "";
+          if (city) {
+            return `${city}${state}`;
+          }
+          if (data.display_name) {
+            return data.display_name.split(',').slice(0, 2).join(',').trim();
+          }
+        }
+      } catch (err) {
+        console.warn("Reverse geocode error:", err);
+      }
+      return `Site (${lat.toFixed(4)}° N, ${lon.toFixed(4)}° E)`;
+    }
+
+    // Unified location updater keeping map pin, search box, card headers & coordinates in perfect sync
+    async function updateLocationAndUI(lat, lon, userLabel, shouldPan = true) {
       currentLat = lat;
       currentLon = lon;
       activeMarker.setLatLng([lat, lon]);
-      map.panTo([lat, lon]);
+      if (shouldPan) {
+        map.setView([lat, lon], Math.max(map.getZoom(), 13), { animate: true });
+      }
+
       const cat = document.getElementById('input-site-category').value.replace('_', ' ');
       document.getElementById('disp-coord-sub').innerText = `${lat.toFixed(4)}° N, ${lon.toFixed(4)}° E • ${cat}`;
-      if (label) {
-        document.getElementById('disp-location-title').innerText = label;
+
+      const searchInput = document.getElementById('search-input');
+      if (userLabel) {
+        document.getElementById('disp-location-title').innerText = userLabel;
+        if (!userLabel.includes('°')) {
+          searchInput.value = userLabel;
+        } else {
+          searchInput.value = `${lat.toFixed(6)}, ${lon.toFixed(6)}`;
+        }
+      } else {
+        document.getElementById('disp-location-title').innerText = `${lat.toFixed(4)}° N, ${lon.toFixed(4)}° E`;
+        searchInput.value = `${lat.toFixed(6)}, ${lon.toFixed(6)}`;
+        reverseGeocodeLocation(lat, lon).then(resolvedName => {
+          document.getElementById('disp-location-title').innerText = resolvedName;
+        });
       }
     }
 
-    map.on('click', (e) => {
-      movePin(e.latlng.lat, e.latlng.lng);
-      executeSiteOptimization();
-    });
+    // Synchronizes the search box text with coordinates and map
+    async function syncLocationFromSearchBox() {
+      const query = document.getElementById('search-input').value.trim();
+      if (!query) return false;
 
-    activeMarker.on('dragend', (e) => {
-      const pos = activeMarker.getLatLng();
-      movePin(pos.lat, pos.lng);
-      executeSiteOptimization();
-    });
-
-    // Search bar geocoding
-    document.getElementById('search-input').addEventListener('keydown', async (e) => {
-      if (e.key === 'Enter') {
-        const query = e.target.value.trim();
-        if (!query) return;
-
-        if (query.includes(',')) {
-          const parts = query.split(',').map(s => parseFloat(s.trim()));
-          if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
-            movePin(parts[0], parts[1], "Custom Coordinates");
-            executeSiteOptimization();
-            return;
-          }
-        }
-
-        try {
-          const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`);
-          const results = await res.json();
-          if (results.length > 0) {
-            const hit = results[0];
-            movePin(parseFloat(hit.lat), parseFloat(hit.lon), hit.name || hit.display_name.split(',')[0]);
-            map.setZoom(12);
-            executeSiteOptimization();
-          }
-        } catch (err) {
-          console.warn("Geocoding lookup note:", err);
-        }
+      const coords = parseCoordinates(query);
+      if (coords) {
+        await updateLocationAndUI(coords.lat, coords.lon, null, true);
+        return true;
       }
+
+      try {
+        const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`);
+        const results = await res.json();
+        if (results && results.length > 0) {
+          const hit = results[0];
+          const lat = parseFloat(hit.lat);
+          const lon = parseFloat(hit.lon);
+          const name = hit.name || hit.display_name.split(',')[0];
+          await updateLocationAndUI(lat, lon, name, true);
+          return true;
+        }
+      } catch (err) {
+        console.warn("Geocoding lookup error:", err);
+      }
+      return false;
+    }
+
+    async function handleSearchSubmit() {
+      await syncLocationFromSearchBox();
+      executeSiteOptimization();
+    }
+
+    // Map interactions
+    map.on('click', async (e) => {
+      await updateLocationAndUI(e.latlng.lat, e.latlng.lng, null, false);
+      executeSiteOptimization();
+    });
+
+    activeMarker.on('dragend', async (e) => {
+      const pos = activeMarker.getLatLng();
+      await updateLocationAndUI(pos.lat, pos.lng, null, false);
+      executeSiteOptimization();
+    });
+
+    // Reactive search input listeners (instantly captures pastes, typing, enter, and focus changes)
+    const searchEl = document.getElementById('search-input');
+    searchEl.addEventListener('keydown', async (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        await syncLocationFromSearchBox();
+        executeSiteOptimization();
+      }
+    });
+
+    searchEl.addEventListener('input', (e) => {
+      const coords = parseCoordinates(e.target.value);
+      if (coords && (Math.abs(coords.lat - currentLat) > 0.0001 || Math.abs(coords.lon - currentLon) > 0.0001)) {
+        updateLocationAndUI(coords.lat, coords.lon, null, true).then(() => {
+          executeSiteOptimization();
+        });
+      }
+    });
+
+    searchEl.addEventListener('change', async () => {
+      await syncLocationFromSearchBox();
+      executeSiteOptimization();
     });
 
     // 2. Semicircle Radial Gauge Chart
@@ -1503,7 +1593,17 @@
 
     // 4. End-to-End API Pipeline (Phase 1 + Phase 2 Seamless Integration)
     async function executeSiteOptimization() {
+      // 1. Immediately check if search box has new coordinates or location entered
+      const searchVal = document.getElementById('search-input').value.trim();
+      const coords = parseCoordinates(searchVal);
+      if (coords) {
+        if (Math.abs(coords.lat - currentLat) > 0.0001 || Math.abs(coords.lon - currentLon) > 0.0001) {
+          await updateLocationAndUI(coords.lat, coords.lon, null, true);
+        }
+      }
+
       const area = parseFloat(document.getElementById('input-area').value) || 120;
+      const cons = parseFloat(document.getElementById('input-cons')?.value) || 600;
       const tariff = parseFloat(document.getElementById('input-tariff').value) || 7.5;
       const siteCategory = document.getElementById('input-site-category').value;
       const backupHours = parseFloat(document.getElementById('input-backup-hours').value) || 8.0;
@@ -1523,7 +1623,7 @@
             latitude: currentLat,
             longitude: currentLon,
             area_m2: area,
-            monthly_consumption_kwh: 600,
+            monthly_consumption_kwh: cons,
             tariff_inr_per_kwh: tariff,
             site_category: siteCategory,
             desired_backup_hours: backupHours,
@@ -1665,8 +1765,8 @@
             })
           }).addTo(map);
 
-          m.on('click', () => {
-            movePin(pt.latitude, pt.longitude, `${pt.preferred_system} Site`);
+          m.on('click', async () => {
+            await updateLocationAndUI(pt.latitude, pt.longitude, null, true);
             executeSiteOptimization();
           });
 
@@ -1725,7 +1825,7 @@
           const lat = gps.latitude;
           const lon = gps.longitude;
           gpsHtml = `<b>GPS Detected:</b> ${lat}° N, ${lon}° E. Panning map to site...`;
-          movePin(lat, lon, `Uploaded Photo (${file.name})`);
+          await updateLocationAndUI(lat, lon, `Photo Site (${file.name})`, true);
           map.setZoom(17);
           executeSiteOptimization();
         }
