@@ -1,19 +1,19 @@
 {
-    "verdict": "Wind Turbine System",
+    "verdict": "Solar-Wind Hybrid System",
     "recommended_capacity": {
-        "solar_kw": 0.0,
-        "wind_kw": 4.0
+        "solar_kw": 46.63,
+        "wind_kw": 10.0
     },
     "suitability_ratings": {
-        "solar_score": 59.5,
-        "wind_score": 95.7,
+        "solar_score": 84.9,
+        "wind_score": 53.9,
         "terrain_score": 92.0
     },
     "financial_summary": {
-        "estimated_capex_inr": 380000.0,
-        "annual_savings_inr": 136834.0,
-        "payback_years": 3.0,
-        "twenty_five_year_net_profit_inr": 0.0
+        "estimated_capex_inr": 3281500.0,
+        "annual_savings_inr": 405476.0,
+        "payback_years": 9.6,
+        "twenty_five_year_net_profit_inr": 894313.0
     },
-    "explanation": "Strong wind resource detected at this site (Wind score: 95.7/100, effective wind speed: 7.16 m/s on Plains / Flat Lowland with a 1.0x elevation speed-up factor). Wind turbines achieve an attractive payback of 3.0 years."
+    "explanation": "Both Solar (score: 84.9/100, GHI: 5.51 kWh/m\u00b2/day) and Wind (score: 53.9/100, speed: 3.79 m/s) are commercially viable on this Plains / Flat Lowland. A Solar-Wind Hybrid setup provides complementary day/night power generation with higher grid independence."
 }

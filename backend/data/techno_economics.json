@@ -1,24 +1,24 @@
 {
-    "tariff_per_kwh": 12.0,
+    "tariff_per_kwh": 7.5,
     "solar_financials": {
-        "capacity_kw": 17.14,
-        "estimated_capex": 857000.0,
-        "annual_opex": 12855.0,
-        "annual_savings": 174197.0,
-        "payback_period_years": 5.3,
-        "npv_25_year": 791156.0,
-        "lcoe_per_kwh": 1.65
+        "capacity_kw": 46.63,
+        "estimated_capex": 2331500.0,
+        "annual_opex": 34972.0,
+        "annual_savings": 351164.0,
+        "payback_period_years": 7.4,
+        "npv_25_year": 894313.0,
+        "lcoe_per_kwh": 1.31
     },
     "wind_financials": {
-        "capacity_kw": 4.0,
-        "estimated_capex": 380000.0,
-        "annual_opex": 11400.0,
-        "annual_savings": 136834.0,
-        "payback_period_years": 3.0
+        "capacity_kw": 10.0,
+        "estimated_capex": 950000.0,
+        "annual_opex": 28500.0,
+        "annual_savings": 54312.0,
+        "payback_period_years": ">25 (Unfavorable)"
     },
     "hybrid_financials": {
-        "estimated_capex": 1237000.0,
-        "annual_savings": 311031.0,
-        "payback_period_years": 4.3
+        "estimated_capex": 3281500.0,
+        "annual_savings": 405476.0,
+        "payback_period_years": 9.6
     }
 }

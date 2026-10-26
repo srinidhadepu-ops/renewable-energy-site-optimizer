@@ -1,8 +1,8 @@
 {
-    "latitude": -41.28,
-    "longitude": 174.77,
-    "elevation_meters": 58.8,
-    "estimated_slope_degrees": 9.8,
+    "latitude": 8.2439,
+    "longitude": 77.5385,
+    "elevation_meters": 83.5,
+    "estimated_slope_degrees": 0.6,
     "terrain_type": "Plains / Flat Lowland",
     "wind_terrain_speedup": 1.0,
     "terrain_suitability_score": 92.0,

@@ -1,52 +1,52 @@
 {
     "inputs": {
-        "installation_area_m2": 120.0,
-        "monthly_consumption_kwh": 500.0,
-        "annual_consumption_kwh": 6000.0
+        "installation_area_m2": 326.4,
+        "monthly_consumption_kwh": 1200.0,
+        "annual_consumption_kwh": 14400.0
     },
     "solar_system": {
-        "capacity_kw": 17.14,
-        "annual_generation_kwh": 23032.9,
+        "capacity_kw": 46.63,
+        "annual_generation_kwh": 79243.6,
         "monthly_generation_kwh": [
-            2180.4,
-            2691.8,
-            2897.5,
-            2702.1,
-            2246.8,
-            1924.4,
-            1206.6,
-            935.0,
-            603.0,
-            784.9,
-            1052.6,
-            1635.6,
-            2172.2
+            5243.6,
+            4700.4,
+            6221.6,
+            6238.2,
+            6103.8,
+            7286.5,
+            6737.7,
+            5800.7,
+            5725.0,
+            7000.7,
+            5925.3,
+            6683.4,
+            5576.7
         ],
         "load_coverage_pct": 100.0
     },
     "wind_system": {
         "feasible_on_site": true,
-        "capacity_kw": 4.0,
-        "annual_generation_kwh": 16805.6,
+        "capacity_kw": 10.0,
+        "annual_generation_kwh": 7241.6,
         "monthly_generation_kwh": [
-            1680.1,
-            1519.8,
-            1639.0,
-            1292.1,
-            1141.1,
-            1165.7,
-            1155.2,
-            1130.5,
-            1283.7,
-            1560.7,
-            1421.9,
-            1443.3,
-            372.5
+            122.0,
+            59.9,
+            241.1,
+            424.5,
+            328.5,
+            91.5,
+            53.4,
+            596.7,
+            846.6,
+            2035.8,
+            1655.3,
+            765.5,
+            20.8
         ],
-        "load_coverage_pct": 100.0
+        "load_coverage_pct": 50.3
     },
     "hybrid_system": {
-        "annual_generation_kwh": 39838.5,
+        "annual_generation_kwh": 86485.2,
         "load_coverage_pct": 100.0
     }
 }
