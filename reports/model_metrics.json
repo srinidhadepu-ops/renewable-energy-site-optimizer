@@ -1,5 +1,5 @@
 {
-    "timestamp": "2026-10-28T14:43:49Z",
+    "timestamp": "2026-10-28T14:51:25Z",
     "solar_forecasting_evaluation": {
         "task": "Solar Daily GHI Time-Series Forecasting (kWh/m2/day)",
         "train_samples": 286,
@@ -80,13 +80,13 @@
     },
     "computational_performance": {
         "trials_count": 100,
-        "cold_start_latency_ms": 111.97,
-        "warm_latency_mean_ms": 107.64,
-        "warm_latency_p50_ms": 107.5,
-        "warm_latency_p95_ms": 116.25,
-        "warm_latency_p99_ms": 117.93,
-        "throughput_pipeline_executions_per_sec": 9.3,
-        "peak_memory_mb": 1.23,
+        "cold_start_latency_ms": 134.35,
+        "warm_latency_mean_ms": 113.71,
+        "warm_latency_p50_ms": 112.5,
+        "warm_latency_p95_ms": 125.72,
+        "warm_latency_p99_ms": 127.81,
+        "throughput_pipeline_executions_per_sec": 8.8,
+        "peak_memory_mb": 1.2,
         "hardware_acceleration": "CPU vectorized (NumPy & SciPy), no GPU required"
     }
 }
