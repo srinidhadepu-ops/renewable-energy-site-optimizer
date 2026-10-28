@@ -13,7 +13,7 @@
   <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"></script>
 
   <style>
     :root {
@@ -309,6 +309,42 @@
       color: #ffffff;
     }
 
+    /* Floating Navigation & Smooth Zoom Controls (Google Maps Style) */
+    .map-controls-pill {
+      position: absolute;
+      bottom: 12px;
+      right: 56px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(12px);
+      border-radius: 100px;
+      padding: 3px 5px;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      z-index: 1000;
+      box-shadow: var(--shadow-md);
+      border: 1px solid rgba(255, 255, 255, 0.85);
+    }
+
+    .map-ctrl-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: none;
+      background: transparent;
+      color: var(--text-dark);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .map-ctrl-btn:hover {
+      background: var(--card-soft);
+      transform: scale(1.08);
+    }
+
     .help-bubble-btn {
       position: absolute;
       bottom: 12px;
@@ -337,6 +373,7 @@
       grid-template-columns: 1.35fr 1.1fr 1fr;
       gap: 14px;
       flex-shrink: 0;
+      align-items: stretch;
     }
 
     .grid-panel {
@@ -451,30 +488,41 @@
       flex-direction: column;
       border-radius: var(--radius-lg);
       position: relative;
+      background: #18221f;
+      min-height: 260px;
+      /* Force height so absolute child can fill via inset:0 */
+      height: 100%;
     }
 
     .media-card-art {
+      position: absolute;
+      inset: 0;
       width: 100%;
       height: 100%;
-      position: absolute;
-      top: 0;
-      left: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.5s ease;
+      display: block;
+      transition: opacity 0.45s ease;
+      z-index: 1;
+      overflow: hidden;
+    }
+
+    .media-card-art svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
     }
 
     .media-card-overlay {
       position: relative;
       z-index: 2;
-      background: linear-gradient(180deg, rgba(18, 24, 23, 0.15) 0%, rgba(18, 24, 23, 0.90) 100%);
-      height: 100%;
-      padding: 16px;
+      background: linear-gradient(180deg, rgba(14,20,19,0.08) 0%, rgba(14,20,19,0.92) 100%);
+      padding: 16px 18px;
       display: flex;
       flex-direction: column;
       justify-content: flex-end;
       color: #ffffff;
+      flex: 1;
+      min-height: 260px;
     }
 
     .system-pill-badge {
@@ -868,6 +916,7 @@
               <line x1="21" y1="21" x2="16.65" y2="16.65"/>
             </svg>
             <input type="text" id="search-input" placeholder="Search city or lat, lon (e.g. 17.986, 79.519)..." value="Indore, Madhya Pradesh">
+            <button type="button" id="search-clear-btn" style="background:none; border:none; color:#94a3b8; font-size:13px; font-weight:700; cursor:pointer; padding:0 4px; display:inline-block;" onclick="clearSearchInput()" title="Clear search">✕</button>
           </div>
 
           <div class="filter-pills-row">
@@ -941,6 +990,22 @@
           <button class="layer-btn active" id="btn-layer-streets" onclick="switchMapLayer('streets')">Streets</button>
           <button class="layer-btn" id="btn-layer-satellite" onclick="switchMapLayer('satellite')">Satellite</button>
           <button class="layer-btn" id="btn-layer-topo" onclick="switchMapLayer('topo')">Terrain</button>
+        </div>
+
+        <!-- Floating Navigation & Smooth Zoom Controls (Google Maps Style) -->
+        <div class="map-controls-pill">
+          <button class="map-ctrl-btn" onclick="map.zoomIn()" title="Zoom In (+)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </button>
+          <button class="map-ctrl-btn" onclick="map.zoomOut()" title="Zoom Out (−)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </button>
+          <button class="map-ctrl-btn" onclick="centerOnActivePin()" title="Center on Active Pin">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2"/></svg>
+          </button>
+          <button class="map-ctrl-btn" onclick="locateUserPosition()" title="Use My Current GPS Location">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+          </button>
         </div>
 
         <!-- Help Tooltip Bubble -->
@@ -1280,7 +1345,14 @@
     // 1. Multi-Layer Leaflet Map Setup (Streets, Satellite, Topography)
     const map = L.map('map', {
       zoomControl: false,
-      attributionControl: false
+      attributionControl: false,
+      zoomSnap: 0.25,
+      zoomDelta: 0.5,
+      wheelPxPerZoomLevel: 70,
+      inertia: true,
+      inertiaDeceleration: 2000,
+      fadeAnimation: true,
+      zoomAnimation: true
     }).setView([22.7196, 75.8577], 11);
 
     const streetLayer = L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', { maxZoom: 20 }).addTo(map);
@@ -1306,6 +1378,40 @@
         streetLayer.addTo(map);
         document.getElementById('btn-layer-streets').classList.add('active');
       }
+    }
+
+    // Map control helper functions
+    function centerOnActivePin() {
+      map.setView([currentLat, currentLon], Math.max(map.getZoom(), 15), { animate: true, duration: 0.5 });
+    }
+
+    function locateUserPosition() {
+      if (!navigator.geolocation) {
+        alert('Geolocation is not supported by your browser.');
+        return;
+      }
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const lat = position.coords.latitude;
+          const lon = position.coords.longitude;
+          await updateLocationAndUI(lat, lon, null, true);
+          map.setZoom(16);
+          executeSiteOptimization();
+        },
+        (err) => {
+          console.warn('Geolocation error:', err.message);
+          alert('Could not get your location. Please allow location access or enter coordinates manually.');
+        },
+        { enableHighAccuracy: true, timeout: 10000 }
+      );
+    }
+
+    function clearSearchInput() {
+      const searchInput = document.getElementById('search-input');
+      searchInput.value = '';
+      searchInput.focus();
+      const clearBtn = document.getElementById('search-clear-btn');
+      if (clearBtn) clearBtn.style.display = 'none';
     }
 
     // Custom Hallmark Circle Pin
@@ -1364,7 +1470,9 @@
     }
 
     // Unified location updater keeping map pin, search box, card headers & coordinates in perfect sync
+    let locationUpdateVersion = 0;
     async function updateLocationAndUI(lat, lon, userLabel, shouldPan = true) {
+      const updateVersion = ++locationUpdateVersion;
       currentLat = lat;
       currentLon = lon;
       activeMarker.setLatLng([lat, lon]);
@@ -1387,6 +1495,7 @@
         document.getElementById('disp-location-title').innerText = `${lat.toFixed(4)}° N, ${lon.toFixed(4)}° E`;
         searchInput.value = `${lat.toFixed(6)}, ${lon.toFixed(6)}`;
         reverseGeocodeLocation(lat, lon).then(resolvedName => {
+          if (updateVersion !== locationUpdateVersion) return;
           document.getElementById('disp-location-title').innerText = resolvedName;
         });
       }
@@ -1405,7 +1514,9 @@
 
       try {
         const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`);
+        if (!res.ok || document.getElementById('search-input').value.trim() !== query) return false;
         const results = await res.json();
+        if (document.getElementById('search-input').value.trim() !== query) return false;
         if (results && results.length > 0) {
           const hit = results[0];
           const lat = parseFloat(hit.lat);
@@ -1421,8 +1532,8 @@
     }
 
     async function handleSearchSubmit() {
-      await syncLocationFromSearchBox();
-      executeSiteOptimization();
+      const resolved = await syncLocationFromSearchBox();
+      if (resolved) await executeSiteOptimization();
     }
 
     // Map interactions
@@ -1437,28 +1548,19 @@
       executeSiteOptimization();
     });
 
-    // Reactive search input listeners (instantly captures pastes, typing, enter, and focus changes)
+    // Search only on explicit submission; intermediate coordinate edits remain untouched.
     const searchEl = document.getElementById('search-input');
-    searchEl.addEventListener('keydown', async (e) => {
+
+    searchEl.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
         e.preventDefault();
-        await syncLocationFromSearchBox();
-        executeSiteOptimization();
+        handleSearchSubmit();
       }
     });
 
     searchEl.addEventListener('input', (e) => {
-      const coords = parseCoordinates(e.target.value);
-      if (coords && (Math.abs(coords.lat - currentLat) > 0.0001 || Math.abs(coords.lon - currentLon) > 0.0001)) {
-        updateLocationAndUI(coords.lat, coords.lon, null, true).then(() => {
-          executeSiteOptimization();
-        });
-      }
-    });
-
-    searchEl.addEventListener('change', async () => {
-      await syncLocationFromSearchBox();
-      executeSiteOptimization();
+      const clearBtn = document.getElementById('search-clear-btn');
+      if (clearBtn) clearBtn.style.display = e.target.value.length > 0 ? 'inline-block' : 'none';
     });
 
     // 2. Semicircle Radial Gauge Chart
@@ -1592,16 +1694,9 @@
     }
 
     // 4. End-to-End API Pipeline (Phase 1 + Phase 2 Seamless Integration)
+    let optimizationRequestVersion = 0;
     async function executeSiteOptimization() {
-      // 1. Immediately check if search box has new coordinates or location entered
-      const searchVal = document.getElementById('search-input').value.trim();
-      const coords = parseCoordinates(searchVal);
-      if (coords) {
-        if (Math.abs(coords.lat - currentLat) > 0.0001 || Math.abs(coords.lon - currentLon) > 0.0001) {
-          await updateLocationAndUI(coords.lat, coords.lon, null, true);
-        }
-      }
-
+      const requestVersion = ++optimizationRequestVersion;
       const area = parseFloat(document.getElementById('input-area').value) || 120;
       const cons = parseFloat(document.getElementById('input-cons')?.value) || 600;
       const tariff = parseFloat(document.getElementById('input-tariff').value) || 7.5;
@@ -1635,6 +1730,7 @@
 
         if (!res.ok) throw new Error("Optimization API request failed");
         const data = await res.json();
+        if (requestVersion !== optimizationRequestVersion) return;
 
         // 1. Update Site Badge & Subtext
         document.getElementById('disp-site-badge').innerText = siteCategory.replace('_', ' ').toUpperCase();
@@ -1714,6 +1810,7 @@
       } catch (err) {
         console.error("Optimization failed:", err);
       } finally {
+        if (requestVersion !== optimizationRequestVersion) return;
         btn.innerHTML = `
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
             <polygon points="5 3 19 12 5 21 5 3"/>

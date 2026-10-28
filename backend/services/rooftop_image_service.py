@@ -1,6 +1,6 @@
 import io
 from typing import Dict, Any, Optional
-from PIL import Image
+from PIL import Image, ImageStat
 import piexif
 
 def extract_gps_from_exif(image_bytes: bytes) -> Optional[Dict[str, float]]:
@@ -25,14 +25,14 @@ def extract_gps_from_exif(image_bytes: bytes) -> Optional[Dict[str, float]]:
 
         if lat_raw and lon_raw:
             lat = _convert_to_degrees(lat_raw)
-            if lat_ref == b'S' or lat_ref == 'S':
+            if lat_ref in (b'S', 'S'):
                 lat = -lat
             lon = _convert_to_degrees(lon_raw)
-            if lon_ref == b'W' or lon_ref == 'W':
+            if lon_ref in (b'W', 'W'):
                 lon = -lon
             return {"latitude": round(lat, 5), "longitude": round(lon, 5)}
-    except Exception:
-        pass
+    except Exception as err:
+        print(f"[VISION-SERVICE] Note: Image has no parseable GPS EXIF: {err}")
     return None
 
 def analyze_rooftop_image(image_bytes: bytes) -> Dict[str, Any]:
@@ -46,18 +46,17 @@ def analyze_rooftop_image(image_bytes: bytes) -> Dict[str, Any]:
     try:
         image = Image.open(io.BytesIO(image_bytes))
         width, height = image.size
+        if width <= 0 or height <= 0 or width * height > 25_000_000:
+            raise ValueError("Image dimensions exceed the supported limit.")
         
         # GPS EXIF
         gps = extract_gps_from_exif(image_bytes)
 
         # Grayscale & luminance analysis
         gray = image.convert("L")
-        pixels = list(gray.getdata())
-        avg_luminance = sum(pixels) / len(pixels)
-        
-        # Variance / texture estimation
-        variance = sum((p - avg_luminance) ** 2 for p in pixels) / len(pixels)
-        std_dev = variance ** 0.5
+        image_stats = ImageStat.Stat(gray)
+        avg_luminance = image_stats.mean[0]
+        std_dev = image_stats.stddev[0]
 
         # Classify roof surface texture based on luminance & variance
         if avg_luminance > 140 and std_dev < 35:
@@ -90,9 +89,10 @@ def analyze_rooftop_image(image_bytes: bytes) -> Dict[str, Any]:
                 f"Calculated ~{int(usable_ratio * 100)}% usable surface area free for mounting panels or turbines."
             ]
         }
-    except Exception as e:
+    except Exception as err:
+        print(f"[VISION-SERVICE] Image analysis failed: {err}")
         return {
             "image_processed": False,
-            "error": str(e),
+            "error": "Image could not be processed.",
             "fallback": "Standard regional satellite model will be utilized."
         }

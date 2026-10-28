@@ -1,52 +1,52 @@
 {
     "inputs": {
-        "installation_area_m2": 326.4,
-        "monthly_consumption_kwh": 1200.0,
-        "annual_consumption_kwh": 14400.0
+        "installation_area_m2": 97.9,
+        "monthly_consumption_kwh": 600.0,
+        "annual_consumption_kwh": 7200.0
     },
     "solar_system": {
-        "capacity_kw": 46.63,
-        "annual_generation_kwh": 79243.6,
+        "capacity_kw": 13.99,
+        "annual_generation_kwh": 23451.7,
         "monthly_generation_kwh": [
-            5243.6,
-            4700.4,
-            6221.6,
-            6238.2,
-            6103.8,
-            7286.5,
-            6737.7,
-            5800.7,
-            5725.0,
-            7000.7,
-            5925.3,
-            6683.4,
-            5576.7
+            1320.9,
+            1711.9,
+            1679.8,
+            1670.7,
+            1735.6,
+            2063.0,
+            2183.6,
+            2222.9,
+            1906.6,
+            1536.6,
+            1805.8,
+            1688.8,
+            1925.5
         ],
         "load_coverage_pct": 100.0
     },
     "wind_system": {
         "feasible_on_site": true,
-        "capacity_kw": 10.0,
-        "annual_generation_kwh": 7241.6,
+        "capacity_kw": 3.3,
+        "annual_generation_kwh": 493.8,
         "monthly_generation_kwh": [
-            122.0,
-            59.9,
-            241.1,
-            424.5,
-            328.5,
-            91.5,
-            53.4,
-            596.7,
-            846.6,
-            2035.8,
-            1655.3,
-            765.5,
-            20.8
+            40.0,
+            2.9,
+            1.5,
+            1.5,
+            4.0,
+            9.3,
+            18.2,
+            78.4,
+            39.3,
+            160.0,
+            89.5,
+            48.3,
+            0.9
         ],
-        "load_coverage_pct": 50.3
+        "load_coverage_pct": 6.9
     },
     "hybrid_system": {
-        "annual_generation_kwh": 86485.2,
+        "annual_generation_kwh": 23945.5,
         "load_coverage_pct": 100.0
     }
 }

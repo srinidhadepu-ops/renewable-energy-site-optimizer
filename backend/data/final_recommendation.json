@@ -1,19 +1,19 @@
 {
-    "verdict": "Solar-Wind Hybrid System",
+    "verdict": "Rooftop / Ground Solar PV",
     "recommended_capacity": {
-        "solar_kw": 46.63,
-        "wind_kw": 10.0
+        "solar_kw": 13.99,
+        "wind_kw": 0.0
     },
     "suitability_ratings": {
-        "solar_score": 84.9,
-        "wind_score": 53.9,
+        "solar_score": 82.4,
+        "wind_score": 30.7,
         "terrain_score": 92.0
     },
     "financial_summary": {
-        "estimated_capex_inr": 3281500.0,
-        "annual_savings_inr": 405476.0,
-        "payback_years": 9.6,
-        "twenty_five_year_net_profit_inr": 894313.0
+        "estimated_capex_inr": 699500.0,
+        "annual_savings_inr": 114944.0,
+        "payback_years": 6.7,
+        "twenty_five_year_net_profit_inr": 366575.0
     },
-    "explanation": "Both Solar (score: 84.9/100, GHI: 5.51 kWh/m\u00b2/day) and Wind (score: 53.9/100, speed: 3.79 m/s) are commercially viable on this Plains / Flat Lowland. A Solar-Wind Hybrid setup provides complementary day/night power generation with higher grid independence."
+    "explanation": "Solar resource is strong (score: 82.4/100, GHI: 5.43 kWh/m\u00b2/day) with an attractive payback of 6.7 years. In contrast, local wind speeds average 2.7 m/s, which is below the economic threshold for small wind turbines (>5.0 m/s recommended)."
 }

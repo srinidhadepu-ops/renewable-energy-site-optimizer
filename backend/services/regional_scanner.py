@@ -41,8 +41,8 @@ def generate_regional_heatmap(
         if res.status_code == 200:
             for item in res.json().get("results", []):
                 elev_dict[(round(item["latitude"], 4), round(item["longitude"], 4))] = item.get("elevation", 500.0)
-    except Exception:
-        pass
+    except Exception as err:
+        print(f"[REGIONAL-SCAN] Elevation batch lookup fallback: {err}")
 
     # Synthesize spatial raster points
     for pt_lat, pt_lon, i, j in coords_list[:25]:

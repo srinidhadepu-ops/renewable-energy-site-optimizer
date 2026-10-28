@@ -1,31 +1,31 @@
 {
-    "solar_suitability_score": 84.9,
+    "solar_suitability_score": 82.4,
     "solar_details": {
-        "annual_avg_ghi_kwh_m2_day": 5.51,
-        "annual_avg_temp_c": 27.1,
-        "min_month_ghi": 4.31,
-        "max_month_ghi": 6.46,
-        "consistency_ratio": 0.67,
+        "annual_avg_ghi_kwh_m2_day": 5.43,
+        "annual_avg_temp_c": 27.2,
+        "min_month_ghi": 3.9,
+        "max_month_ghi": 6.67,
+        "consistency_ratio": 0.59,
         "score_components": {
-            "base_irradiance_score": 61.3,
+            "base_irradiance_score": 60.1,
             "temperature_score": 13.6,
-            "consistency_score": 10.0
+            "consistency_score": 8.8
         }
     },
-    "wind_suitability_score": 53.9,
+    "wind_suitability_score": 30.7,
     "wind_details": {
-        "mean_speed_10m_ms": 3.79,
-        "mean_speed_hub_ms": 4.62,
+        "mean_speed_10m_ms": 2.7,
+        "mean_speed_hub_ms": 3.29,
         "terrain_speedup_factor": 1.0,
-        "median_speed_10m_ms": 3.9,
-        "p90_speed_10m_ms": 6.44,
-        "cut_in_hours_pct": 62.4,
-        "wind_power_density_w_m2": 62.8,
+        "median_speed_10m_ms": 2.52,
+        "p90_speed_10m_ms": 4.66,
+        "cut_in_hours_pct": 36.8,
+        "wind_power_density_w_m2": 22.5,
         "score_components": {
-            "speed_score": 28.9,
-            "availability_score": 18.7,
-            "wpd_score": 6.3
+            "speed_score": 17.5,
+            "availability_score": 11.0,
+            "wpd_score": 2.2
         }
     },
-    "preliminary_verdict": "Hybrid Viable"
+    "preliminary_verdict": "Solar Preferred"
 }

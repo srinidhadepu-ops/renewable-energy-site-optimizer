@@ -1,9 +1,9 @@
 {
-    "latitude": 8.2439,
-    "longitude": 77.5385,
+    "latitude": 17.986188,
+    "longitude": 79.519546,
     "source": "Open-Meteo ERA5 / Copernicus Global Reanalysis",
-    "start": "2025-10-22",
-    "end": "2026-10-21",
+    "start": "2025-10-24",
+    "end": "2026-10-23",
     "daily_records": 365,
     "hourly_records": 8760
 }

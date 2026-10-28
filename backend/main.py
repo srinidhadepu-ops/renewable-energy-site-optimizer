@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Optional, List, Dict, Any
 import json
 import os
+from threading import Lock
 
 # Phase 1 Core Services
 from backend.services.weather_service import fetch_weather_for_location
@@ -28,27 +29,38 @@ app = FastAPI(
     version="2.5.0"
 )
 
-# Enable CORS for frontend UI
+# Services share location-specific CSV/JSON files; serialize analyses to prevent mixed-site results.
+_SITE_ANALYSIS_LOCK = Lock()
+
+# Enable CORS for frontend UI (Public MVP API, credentials disabled to prevent credential leakage)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
+    allow_credentials=False,
+    allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["*"],
 )
 
 class SiteAnalysisRequest(BaseModel):
-    latitude: float = Field(..., ge=-90.0, le=90.0)
-    longitude: float = Field(..., ge=-180.0, le=180.0)
-    area_m2: float = Field(default=100.0, gt=0)
-    monthly_consumption_kwh: float = Field(default=500.0, gt=0)
-    tariff_inr_per_kwh: float = Field(default=7.5, gt=0)
-    # Phase 2 Parameters
-    site_category: str = Field(default="residential_rooftop", description="residential_rooftop, commercial_building, farmland_agri, open_barren_land, hillcrest_ridge")
-    desired_backup_hours: float = Field(default=8.0, ge=0.0, le=24.0)
-    neighbor_height_m: float = Field(default=4.0, ge=0.0)
-    neighbor_distance_m: float = Field(default=6.0, ge=0.0)
-    neighbor_direction: str = Field(default="East")
+    latitude: float = Field(..., ge=-90.0, le=90.0, description="WGS84 latitude")
+    longitude: float = Field(..., ge=-180.0, le=180.0, description="WGS84 longitude")
+    area_m2: float = Field(default=100.0, gt=0, le=10_000_000.0, description="Available site/roof area in m²")
+    monthly_consumption_kwh: float = Field(default=500.0, gt=0, le=10_000_000.0, description="Monthly load in kWh")
+    tariff_inr_per_kwh: float = Field(default=7.5, gt=0, le=1000.0, description="Electricity tariff in INR/kWh")
+    # Phase 2 Parameters with strict validation
+    site_category: str = Field(
+        default="residential_rooftop",
+        pattern="^(residential_rooftop|commercial_building|farmland_agri|open_barren_land|hillcrest_ridge)$",
+        description="residential_rooftop, commercial_building, farmland_agri, open_barren_land, hillcrest_ridge"
+    )
+    desired_backup_hours: float = Field(default=8.0, ge=0.0, le=24.0, description="Target BESS battery autonomy hours")
+    neighbor_height_m: float = Field(default=4.0, ge=0.0, le=200.0, description="Adjacent obstacle height in meters")
+    neighbor_distance_m: float = Field(default=6.0, ge=0.0, le=500.0, description="Distance to adjacent obstacle in meters")
+    neighbor_direction: str = Field(
+        default="East",
+        pattern="^(East|West|South|North)$",
+        description="Direction of adjacent building"
+    )
 
 class RegionalScanRequest(BaseModel):
     latitude: float = Field(..., ge=-90.0, le=90.0)
@@ -88,6 +100,7 @@ def analyze_site(req: SiteAnalysisRequest):
     Seamlessly integrates Phase 1 (Geospatial Satellite & Climate Engine)
     with Phase 2 (Site Category, Shadow/Orientation, Wind Turbine Model, BESS Storage).
     """
+    _SITE_ANALYSIS_LOCK.acquire()
     try:
         # 1. Real-time terrain & ridge slope analysis
         terrain_res = get_elevation_and_terrain(req.latitude, req.longitude)
@@ -168,7 +181,9 @@ def analyze_site(req: SiteAnalysisRequest):
         
     except Exception as e:
         print(f"Error during site analysis: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Site analysis failed. Please retry.")
+    finally:
+        _SITE_ANALYSIS_LOCK.release()
 
 @app.post("/api/regional-scan")
 def regional_scan(req: RegionalScanRequest):
@@ -182,14 +197,39 @@ def regional_scan(req: RegionalScanRequest):
         )
         return {"success": True, "data": heatmap_res}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        print(f"Error during regional scan: {e}")
+        raise HTTPException(status_code=500, detail="Regional scan failed. Please retry.")
+
+MAX_IMAGE_UPLOAD_BYTES = 15 * 1024 * 1024  # 15 MB safety limit
+ALLOWED_IMAGE_TYPES = {"image/jpeg", "image/png", "image/webp"}
 
 @app.post("/api/upload-rooftop-image")
 async def upload_rooftop_image(file: UploadFile = File(...)):
     """Processes uploaded rooftop or drone image, extracting GPS & roof surface obstruction."""
+    if file.content_type not in ALLOWED_IMAGE_TYPES:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Unsupported file type '{file.content_type}'. Allowed types: JPEG, PNG, WebP."
+        )
+
     try:
-        contents = await file.read()
+        contents = await file.read(MAX_IMAGE_UPLOAD_BYTES + 1)
+        if len(contents) > MAX_IMAGE_UPLOAD_BYTES:
+            raise HTTPException(
+                status_code=413,
+                detail=f"File exceeds maximum allowed upload size of 15 MB."
+            )
+
         analysis = analyze_rooftop_image(contents)
-        return {"success": True, "filename": file.filename, "analysis": analysis}
+        if not analysis.get("image_processed"):
+            raise HTTPException(status_code=400, detail="Image could not be processed. Check the file and try again.")
+        return {
+            "success": True,
+            "filename": Path(file.filename or "upload.jpg").name,
+            "analysis": analysis
+        }
+    except HTTPException:
+        raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        print(f"Error processing rooftop image: {e}")
+        raise HTTPException(status_code=500, detail="Failed to process image file.")
