@@ -1,6 +1,7 @@
 """
-Generates the comprehensive, academic-grade Word Document (.docx)
-for the 4-member team viva / project evaluation.
+Regenerates PROJECT_EVALUATION_TEAM_GUIDE.docx to include deep, explicit
+technical stacks, library usage, implementation mechanics, algorithm details,
+and component interactions for every single member and module.
 """
 
 from pathlib import Path
@@ -28,30 +29,27 @@ def add_header(doc, text, level):
     for run in p.runs:
         if level == 1:
             run.font.color.rgb = RGBColor(18, 52, 86)  # Deep Navy
-            run.font.size = Pt(18)
+            run.font.size = Pt(17)
             run.bold = True
         elif level == 2:
             run.font.color.rgb = RGBColor(16, 124, 65) # Deep Green
-            run.font.size = Pt(14)
+            run.font.size = Pt(13)
             run.bold = True
         elif level == 3:
             run.font.color.rgb = RGBColor(40, 40, 40)
-            run.font.size = Pt(12)
+            run.font.size = Pt(11)
             run.bold = True
     return p
 
 def create_document():
     doc = docx.Document()
     
-    # Page setup: Normal 1-inch margins
-    sections = doc.sections
-    for section in sections:
+    for section in doc.sections:
         section.top_margin = Inches(1)
         section.bottom_margin = Inches(1)
         section.left_margin = Inches(1)
         section.right_margin = Inches(1)
 
-    # Base Styles
     normal_style = doc.styles['Normal']
     normal_style.font.name = 'Calibri'
     normal_style.font.size = Pt(11)
@@ -64,47 +62,52 @@ def create_document():
     title_p.paragraph_format.space_before = Pt(0)
     title_p.paragraph_format.space_after = Pt(4)
     title_p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    run_title = title_p.add_run("PROJECT EVALUATION & COMPREHENSIVE TEAM VIVA GUIDE")
-    run_title.font.size = Pt(22)
+    run_title = title_p.add_run("PROJECT EVALUATION & TEAM VIVA GUIDE")
+    run_title.font.size = Pt(20)
     run_title.font.bold = True
     run_title.font.color.rgb = RGBColor(18, 52, 86)
 
     sub_p = doc.add_paragraph()
-    sub_p.paragraph_format.space_after = Pt(18)
+    sub_p.paragraph_format.space_after = Pt(16)
     sub_p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    run_sub = sub_p.add_run("Helios & Aeolus: AI & Satellite Geospatial Decision Support System for Renewable Energy Siting\n4-Member Work Breakdown, Full Project Mechanics, Code Walkthrough, and Viva Defense Strategy")
-    run_sub.font.size = Pt(13)
+    run_sub = sub_p.add_run(
+        "Helios & Aeolus: AI & Satellite Geospatial Decision Support System for Renewable Energy Siting\n"
+        "Complete 4-Member Work Division, Exhaustive Technology Stack Mapping, Implementation Mechanics, Code Walkthrough & Defense Strategy"
+    )
+    run_sub.font.size = Pt(12)
     run_sub.font.italic = True
     run_sub.font.color.rgb = RGBColor(100, 100, 100)
 
     p_meta = doc.add_paragraph()
     p_meta.paragraph_format.space_after = Pt(20)
     p_meta.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    r_meta = p_meta.add_run("Evaluation Readiness: 100% Complete | Tests: 78/78 Passing | Stack: Python FastAPI + Vanilla JS Leaflet")
+    r_meta = p_meta.add_run("Evaluation Readiness: 100% Complete | Tests: 78/78 Passing | Stack: Python 3.14 + FastAPI + Leaflet GIS")
     r_meta.font.bold = True
     r_meta.font.color.rgb = RGBColor(16, 124, 65)
 
     doc.add_page_break()
 
     # ==========================================
-    # TABLE OF CONTENTS / OVERVIEW
+    # TABLE OF CONTENTS
     # ==========================================
-    add_header(doc, "Table of Contents & Executive Roadmap", level=1)
+    add_header(doc, "Table of Contents & Preparation Blueprint", level=1)
     p_toc = doc.add_paragraph(
         "This master preparation guide is crafted for the upcoming project defense. It arms every team member "
-        "with deep, unflinching command over their designated role and the entire interconnected system:\n\n"
-        "• Section 1: Executive 4-Member Work Division & Delivery Matrix\n"
-        "• Section 2: End-to-End System Architecture (How All Parts Connect)\n"
-        "• Section 3: Member 1 Deep Dive — Geospatial Data Pipeline, Satellite Weather & Elevation\n"
-        "• Section 4: Member 2 Deep Dive — Resource Scoring & Physical Energy Conversion Physics\n"
-        "• Section 5: Member 3 Deep Dive — Techno-Economics, Decision Engine & Hardware Catalogs\n"
-        "• Section 6: Member 4 Deep Dive — Interactive Frontend, Leaflet GIS & Security Testing\n"
-        "• Section 7: Complete Codebase & Project Directory Architecture Breakdown\n"
-        "• Section 8: Professor Viva Defense Strategy — Likely Questions & High-Scoring Answers\n"
+        "with deep, unflinching command over their designated role, the exact technologies used, how each algorithm is "
+        "implemented in code, and how all parts interconnect:\n\n"
+        "• Section 1: Executive 4-Member Work Division & Responsibility Matrix\n"
+        "• Section 2: Complete Project Technology Stack & Architecture Topology\n"
+        "• Section 3: Member 1 Deep Dive — Technologies, Implementation Mechanics & Algorithms (Data & Topography)\n"
+        "• Section 4: Member 2 Deep Dive — Technologies, Implementation Mechanics & Algorithms (Physics & Simulation)\n"
+        "• Section 5: Member 3 Deep Dive — Technologies, Implementation Mechanics & Algorithms (Economics & Hardware)\n"
+        "• Section 6: Member 4 Deep Dive — Technologies, Implementation Mechanics & Algorithms (GIS, REST API & Security)\n"
+        "• Section 7: End-to-End Pipeline Mechanics: How Every Module Operates Independently & Jointly\n"
+        "• Section 8: Complete Codebase & Directory Inventory (Every File, Role & Dependency)\n"
+        "• Section 9: Professor Viva Defense Strategy — Top 10 Questions & High-Scoring Answers\n"
     )
 
     # ==========================================
-    # SECTION 1: WORK DIVISION
+    # SECTION 1: 4-MEMBER WORK DIVISION MATRIX
     # ==========================================
     add_header(doc, "Section 1: 4-Member Work Division & Responsibility Matrix", level=1)
     doc.add_paragraph(
@@ -117,7 +120,7 @@ def create_document():
     table1.alignment = WD_TABLE_ALIGNMENT.CENTER
     table1.style = 'Table Grid'
     hdr_cells = table1.rows[0].cells
-    headers = ["Member & Title", "Assigned Core Services", "Key Formulas & Deliverables", "Viva Role & Focus"]
+    headers = ["Member & Title", "Assigned Services & Files", "Exact Technologies Used", "Viva Role & Presentation Focus"]
     for i, title in enumerate(headers):
         hdr_cells[i].text = title
         hdr_cells[i].paragraphs[0].runs[0].font.bold = True
@@ -125,30 +128,30 @@ def create_document():
         set_cell_background(hdr_cells[i], "123456")
 
     roles_data = [
-        ("Member 1\nData Engineer & Geospatial Lead",
-         "• weather_service.py\n• terrain_service.py\n• validate_weather_data.py",
-         "• Open-Meteo ERA5 / NASA POWER APIs\n• Digital Elevation Models & Venturi speedup\n• Circular wind vector averaging (197.8° SSW)\n• Data quality audit (0 duplicates/sentinels)",
-         "Explain how raw satellite solar/wind/terrain data is fetched, validated, and preprocessed for any coordinates on Earth."),
-        ("Member 2\nPhysics Modeler & Energy Simulation Lead",
-         "• resource_scoring.py\n• energy_model.py\n• rooftop_shadow_service.py",
-         "• Solar (GHI, temp derating, consistency)\n• Wind (hub extrapolation, WPD, shear factor)\n• Solar PV yield (PR=0.78)\n• Cubic wind turbine power curve (v_cutin=3.0)\n• Astronomical solar altitude/azimuth & shadow",
-         "Explain how raw weather readings are converted into 0-100 resource scores, obstacle shadows, and physical monthly kWh generation."),
-        ("Member 3\nEconomics & Systems Hardware Lead",
-         "• economics_service.py\n• recommendation_engine.py\n• wind_turbine_catalog.py\n• bess_service.py",
-         "• 25-yr discounted cash flow (r=8%, 0.5% degradation)\n• Simple Payback Period & LCOE\n• Multi-criteria decision tree\n• Hardware specs: 4 turbines (VAWT/HAWT)\n• LiFePO4 BESS sizing (8h night autonomy)",
-         "Explain how physical energy yields are turned into financial viability (CAPEX, Payback, NPV), concrete equipment catalogs, and final verdicts."),
-        ("Member 4\nFull-Stack Integrator & QA/Security Lead",
-         "• backend/main.py\n• index.html\n• rooftop_image_service.py\n• regional_scanner.py\n• tests/test_api.py",
-         "• FastAPI REST pipeline & CORS configuration\n• Leaflet GIS multi-layer map with smooth zoom\n• Computer vision texture & EXIF extraction\n• Regional raster heatmap scanner\n• Pytest 78-test suite (OWASP Top 10, Bandit)",
-         "Explain how the user interacts with the system, how frontend talks to backend, image EXIF GPS extraction, and how the app was tested.")
+        ("Member 1\nLead Geospatial Data Engineer",
+         "• backend/services/weather_service.py\n• backend/services/terrain_service.py\n• scripts/validate_weather_data.py\n• backend/data/*.csv",
+         "• Open-Meteo ERA5 Reanalysis API\n• NASA POWER REST API\n• Open-Elevation SRTM API\n• Python requests, pandas, numpy\n• Vector trigonometric math",
+         "Explain how raw satellite solar, wind, and elevation data are acquired for any coordinate on Earth, preprocessed without missing values, and validated for physical plausibility."),
+        ("Member 2\nLead Renewable Energy Physicist",
+         "• backend/services/resource_scoring.py\n• backend/services/energy_model.py\n• backend/services/rooftop_shadow_service.py",
+         "• NumPy vectorization\n• Astronomical solar positioning algorithms\n• Photovoltaic physics (PR=0.78)\n• Cubic aerodynamic power curve models\n• Geometry & trigonometry (tan/atan)",
+         "Explain how weather data is converted into physical energy: scoring indices, obstacle shadows, optimal tilt/azimuth angles, and 12-month generation forecasts in kWh."),
+        ("Member 3\nTechno-Economics & Hardware Lead",
+         "• backend/services/economics_service.py\n• backend/services/recommendation_engine.py\n• backend/services/wind_turbine_catalog.py\n• backend/services/bess_service.py",
+         "• Discounted Cash Flow (DCF) modeling\n• Multi-criteria decision trees\n• Python dictionary catalogs & structural safety constraints\n• Electrochemical battery modeling (LiFePO4)",
+         "Explain how physical energy yield is turned into financial viability (CAPEX, Payback, NPV), how commercial hardware is matched to site categories, and how the multi-criteria verdict is generated."),
+        ("Member 4\nFull-Stack Integrator & Security QA Lead",
+         "• backend/main.py\n• index.html\n• backend/services/rooftop_image_service.py\n• backend/services/regional_scanner.py\n• tests/test_api.py",
+         "• FastAPI & Pydantic v2\n• Leaflet.js GIS, OpenStreetMap, ESRI Satellite, OpenTopoMap\n• Chart.js & SVG vector graphics\n• Pillow (PIL) & piexif for EXIF metadata\n• Pytest, Bandit, pip-audit, Semgrep",
+         "Explain how the user interacts with the system, how frontend and backend communicate via REST, how drone photos auto-navigate the map, and how the entire system was rigorously tested.")
     ]
 
-    for m_title, m_serv, m_form, m_viva in roles_data:
+    for m_title, m_serv, m_tech, m_viva in roles_data:
         row_cells = table1.add_row().cells
         row_cells[0].text = m_title
         row_cells[0].paragraphs[0].runs[0].font.bold = True
         row_cells[1].text = m_serv
-        row_cells[2].text = m_form
+        row_cells[2].text = m_tech
         row_cells[3].text = m_viva
         for cell in row_cells:
             cell.paragraphs[0].paragraph_format.space_after = Pt(2)
@@ -156,259 +159,342 @@ def create_document():
     doc.add_page_break()
 
     # ==========================================
-    # SECTION 2: END-TO-END PIPELINE MECHANICS
+    # SECTION 2: COMPLETE TECHNOLOGY STACK
     # ==========================================
-    add_header(doc, "Section 2: End-to-End System Pipeline (How the Whole Project Works)", level=1)
+    add_header(doc, "Section 2: Complete Project Technology Stack & Architecture Topology", level=1)
     doc.add_paragraph(
-        "To convince the professor, the team must demonstrate how each service operates independently as a modular Python engine, "
-        "and how they link together sequentially inside `backend/main.py` when a user clicks 'Run Renewable Optimization' on the map."
-    )
-    
-    doc.add_paragraph(
-        "Step-by-Step Execution Chain inside `POST /api/analyze-site`:\n\n"
-        "1. USER INPUT: The user clicks the Leaflet map or inputs coordinates (lat, lon), plot area (m²), monthly electricity bill/load (kWh), "
-        "tariff (INR/kWh), site category (e.g. residential rooftop, farmland), desired BESS battery backup hours, and adjacent obstacle dimensions.\n\n"
-        "2. TOPOGRAPHY ANALYSIS (`terrain_service.py` - Member 1):\n"
-        "   • Queries Open-Elevation SRTM API at (lat, lon) and two 1.1km offset coordinates (North, East).\n"
-        "   • Calculates topographic gradient: s = sqrt(d_north² + d_east²) and slope angle.\n"
-        "   • Evaluates Venturi ridge speed-up factor S = 1.0 + min(0.35, s * 2.5). Wind accelerates over ridges.\n\n"
-        "3. SATELLITE CLIMATE INGESTION (`weather_service.py` - Member 1):\n"
-        "   • Queries Open-Meteo ERA5 / Copernicus Reanalysis for 365 daily GHI insolation values and 8,760 hourly wind speeds/directions.\n"
-        "   • Automatic fallback to NASA POWER API.\n"
-        "   • Builds `monthly_summary.csv`, calculating data coverage percentages and circular wind vector averages.\n\n"
-        "4. RESOURCE SUITABILITY SCORING (`resource_scoring.py` - Member 2):\n"
-        "   • Computes 0-100 Solar Suitability Score: Baseline GHI (up to 70 pts) - Ambient Temperature Derating (15 pts) + Seasonal Consistency Ratio (15 pts).\n"
-        "   • Computes 0-100 Wind Suitability Score: Hub-height extrapolated wind speed (50 pts) + Cut-in availability hours (30 pts) + Wind Power Density (20 pts).\n\n"
-        "5. ROOFTOP SHADOW & MICRO-PLACEMENT (`rooftop_shadow_service.py` - Member 2):\n"
-        "   • Evaluates astronomical solar declination, altitude, and azimuth at critical winter solstice (lowest solar elevation).\n"
-        "   • Calculates adjacent building shadow length: L = Height / tan(solar_altitude) and plot penetration.\n"
-        "   • Determines optimal panel tilt (lat ± 5°) and True South azimuth (180°).\n"
-        "   • Deducts shaded boundary area, outputting effective unshaded solar area (m²).\n\n"
-        "6. PHYSICAL ENERGY SIMULATION (`energy_model.py` - Member 2):\n"
-        "   • Solar PV: Sized to roof area (area / 7 m²/kW). Monthly yield = Capacity * GHI * Days * PR (PR = 0.78).\n"
-        "   • Wind Turbine: Evaluates continuous cubic power curve on all 8,760 hourly hub-height speeds.\n"
-        "   • Computes annual solar kWh, annual wind kWh, and load offset percentages.\n\n"
-        "7. TECHNO-ECONOMIC FEASIBILITY (`economics_service.py` - Member 3):\n"
-        "   • Establishes CAPEX (Solar: ₹50,000/kW, Wind: ₹95,000/kW) and annual OPEX.\n"
-        "   • Net metering: Self-consumed energy saves 100% tariff; surplus grid export earns 50% tariff.\n"
-        "   • Evaluates 25-year discounted cash flow at 8% discount rate with 0.5%/yr PV degradation. Outputs NPV, Payback Period, and LCOE.\n\n"
-        "8. HARDWARE SELECTION & BESS SIZING (`wind_turbine_catalog.py` & `bess_service.py` - Member 3):\n"
-        "   • Matches site category to specific commercial turbine (e.g., silent VAWT for residential, high-efficiency HAWT for farms).\n"
-        "   • Sizes LiFePO4 battery storage for desired backup hours accounting for 85% DoD and 92% round-trip efficiency.\n\n"
-        "9. MULTI-CRITERIA DECISION TREE (`recommendation_engine.py` - Member 3):\n"
-        "   • Evaluates suitability scores, payback periods, physical feasibility, and terrain to issue the authoritative verdict: "
-        "'Rooftop / Ground Solar PV', 'Wind Turbine System', or 'Solar-Wind Hybrid System', complete with natural language explanation.\n\n"
-        "10. REST API RESPONSE & REACTIVE UI (`backend/main.py` & `index.html` - Member 4):\n"
-        "   • FastAPI serializes comprehensive JSON envelope with totalized turnkey CAPEX.\n"
-        "   • Frontend updates without page reload: Siting Index semicircle gauge, 12-month generation forecast bar chart, "
-        "shadow micro-placement zoning, turbine spec sheet, BESS autonomy, and dynamic SVG vector landscape art."
+        "The project is built on modern, lightweight, industry-standard technologies that require no costly cloud "
+        "infrastructure or proprietary licenses. Every tier is designed for rapid execution and reproducible evaluation:"
     )
 
-    doc.add_page_break()
-
-    # ==========================================
-    # SECTION 3: MEMBER 1 IN-DEPTH
-    # ==========================================
-    add_header(doc, "Section 3: Member 1 — Data Engineering, Satellite Weather & Topography", level=1)
-    doc.add_paragraph(
-        "Title: Lead Geospatial Data Engineer\n"
-        "Files Owned: backend/services/weather_service.py, backend/services/terrain_service.py, scripts/validate_weather_data.py\n"
-        "Datasets Owned: backend/data/daily_weather.csv, backend/data/hourly_wind.csv, backend/data/monthly_summary.csv"
-    )
-    
-    add_header(doc, "What Member 1 Must Explain From Start to Finish:", level=2)
-    doc.add_paragraph(
-        "1. THE SATELLITE WEATHER PROBLEM & SOLUTION:\n"
-        "   • Problem: NASA POWER's daily endpoint originally had 18.36% missing solar records in late season and 100% missing daily wind direction (WD10M).\n"
-        "   • Solution: Implemented a dual-source satellite pipeline in `weather_service.py`. The primary engine queries Open-Meteo ERA5 / Copernicus Reanalysis, "
-        "retrieving 365 daily shortwave solar radiation observations (converted from MJ/m² to kWh/m² by dividing by 3.6) and 8,760 consecutive hourly wind speeds and directions in seconds. "
-        "NASA POWER is maintained as an automated fallback.\n\n"
-        "2. CIRCULAR WIND DIRECTION MATHEMATICS:\n"
-        "   • Crucial viva concept: Standard arithmetic averaging of wind angles fails because 359° and 1° average to 180° (South) instead of 0° (North).\n"
-        "   • Member 1 implemented vector decomposition across all 8,760 hourly readings:\n"
-        "     u_bar = (1/N) * sum(sin(rad(theta))),  v_bar = (1/N) * sum(cos(rad(theta)))\n"
-        "     theta_mean = atan2(u_bar, v_bar) mod 360°\n"
-        "   • Proves the prevailing wind vector is 197.82° (South-Southwest), matching the monsoonal atmospheric circulation of the subcontinent.\n\n"
-        "3. DIGITAL ELEVATION MODEL & VENTURI RIDGE ACCELERATION (`terrain_service.py`):\n"
-        "   • Queries Open-Elevation SRTM data using a 3-point coordinate triangle: (lat, lon), (lat+0.01, lon), (lat, lon+0.01).\n"
-        "   • Computes elevation gradient d_north, d_east over ~1,110 meters and calculates topographic slope gradient s.\n"
-        "   • If an elevated ridge (>600m) is detected, applies boundary-layer aerodynamic compression: S = 1.0 + min(0.35, s * 2.5), giving up to a 1.35x wind boost.\n\n"
-        "4. DATA QUALITY VALIDATOR (`scripts/validate_weather_data.py`):\n"
-        "   • Automated validator script that checks every file for physical bounds (GHI: 0-14, Temp: -60 to 60, Wind: 0-75 m/s).\n"
-        "   • Scans for NASA sentinel values (-999) and duplicate dates. Generates `reports/data_quality_results.json` confirming 0 missing values in runtime files."
-    )
-
-    doc.add_page_break()
-
-    # ==========================================
-    # SECTION 4: MEMBER 2 IN-DEPTH
-    # ==========================================
-    add_header(doc, "Section 4: Member 2 — Resource Scoring, Shadow Modeling & Energy Physics", level=1)
-    doc.add_paragraph(
-        "Title: Lead Renewable Energy Physicist & Simulation Engineer\n"
-        "Files Owned: backend/services/resource_scoring.py, backend/services/energy_model.py, backend/services/rooftop_shadow_service.py"
-    )
-    
-    add_header(doc, "What Member 2 Must Explain From Start to Finish:", level=2)
-    doc.add_paragraph(
-        "1. MULTI-FACTOR RESOURCE SUITABILITY SCORING (`resource_scoring.py`):\n"
-        "   • Solar Score (0 to 100 points):\n"
-        "     - Base Irradiance (0-70 pts): Scaled linearly from 2.0 kWh/m²/day (0 pts) to 6.0 kWh/m²/day (70 pts).\n"
-        "     - Temperature Derating (0-15 pts): PV cell efficiency drops ~0.4%/°C above 25°C. Full 15 pts if avg temp <= 25°C; decreases to 5 pts at 40°C.\n"
-        "     - Seasonal Consistency (0-15 pts): Min monthly GHI / Max monthly GHI ratio. High consistency avoids winter generation deficits.\n"
-        "   • Wind Score (0 to 100 points):\n"
-        "     - Speed Score (0-50 pts): Extrapolated to hub height via wind shear law: v_hub = v_10m * (40/10)^0.143.\n"
-        "     - Operating Hours / Cut-in Availability (0-30 pts): % of hours where effective wind speed >= 3.0 m/s.\n"
-        "     - Wind Power Density (WPD) (0-20 pts): WPD = 0.5 * rho * v³ (rho = 1.225 kg/m³). Scaled up to 200 W/m².\n\n"
-        "2. ROOFTOP SHADOW & SOLAR MICRO-PLACEMENT (`rooftop_shadow_service.py`):\n"
-        "   • Astronomical Solar Angles: Calculates solar declination delta = 23.45 * sin(360/365 * (DOY - 81)), hour angle omega = 15° * (solar_hour - 12), "
-        "and solar altitude alpha.\n"
-        "   • Critical Winter Solstice Shadow: Sun is lowest on Dec 21 (DOY 355). Calculates shadow length L = Neighbor_Height / tan(alpha_winter). "
-        "Calculates shadow penetration into user's plot after subtracting neighbor distance.\n"
-        "   • Optimal Orientation: Identifies optimal panel tilt (approx. latitude ± 5°) and azimuth (180° True South in Northern Hemisphere).\n"
-        "   • Micro-Placement Heatmap: Generates 3 discrete placement zones (Unobstructed Solar Core, Aerodynamic Wind Parapet, and Shaded Boundary Buffer).\n\n"
-        "3. PHYSICAL ENERGY GENERATION SIMULATION (`energy_model.py`):\n"
-        "   • Solar PV Capacity: Sized at 7.0 m² per kW. Monthly generation = Capacity (kW) * GHI * Days * 0.78 (PR).\n"
-        "   • Wind Power Simulation: For all 8,760 hourly readings, evaluates continuous aerodynamic cubic power curve between cut-in (3.0 m/s), rated (10.5 m/s), and cut-out (25.0 m/s).\n"
-        "   • Aggregates into 12-month solar and wind kWh yields, computing total annual load offset %."
-    )
-
-    doc.add_page_break()
-
-    # ==========================================
-    # SECTION 5: MEMBER 3 IN-DEPTH
-    # ==========================================
-    add_header(doc, "Section 5: Member 3 — Techno-Economics, Hardware Catalogs & Decision Engine", level=1)
-    doc.add_paragraph(
-        "Title: Lead Techno-Economist & Renewable Systems Architect\n"
-        "Files Owned: backend/services/economics_service.py, backend/services/recommendation_engine.py, backend/services/wind_turbine_catalog.py, backend/services/bess_service.py\n"
-        "Deliverables Owned: backend/data/techno_economics.json, backend/data/final_recommendation.json"
-    )
-    
-    add_header(doc, "What Member 3 Must Explain From Start to Finish:", level=2)
-    doc.add_paragraph(
-        "1. FINANCIAL & CASH FLOW MODELING (`economics_service.py`):\n"
-        "   • Benchmarks: Solar CAPEX = ₹50,000/kW (OPEX = 1.5%/yr). Wind CAPEX = ₹95,000/kW (OPEX = 3.0%/yr).\n"
-        "   • Net Metering Revenue: Directly consumed generation saves 100% of tariff (e.g. ₹7.5/kWh); surplus exported to grid earns 50% tariff (₹3.75/kWh).\n"
-        "   • 25-Year Discounted Net Present Value (NPV):\n"
-        "     NPV = -CAPEX + sum_{t=1}^{25} [ (Savings_t * (1 - 0.005)^(t-1) - OPEX) / (1 + r)^t ], where r = 8% discount rate and 0.5%/yr PV degradation.\n"
-        "   • Simple Payback Period = CAPEX / Net Annual Cash Flow.\n"
-        "   • Levelized Cost of Energy (LCOE) = Total Lifetime Sunk Cost / Lifetime kWh Generation.\n\n"
-        "2. SPECIFIC WIND TURBINE HARDWARE CATALOG (`wind_turbine_catalog.py`):\n"
-        "   • Built a real catalog of 4 commercial turbines:\n"
-        "     1. HelixUrban V-800: 0.8 kW VAWT, 1.8 m/s cut-in, 34 dB noise, designed for residential rooftops.\n"
-        "     2. Aeolus Tower-2K: 2.0 kW VAWT, 2.2 m/s cut-in, 38 dB noise, designed for commercial buildings.\n"
-        "     3. Zephyr-3200: 3.2 kW HAWT, 2.8 m/s cut-in, guyed mast, designed for farmlands.\n"
-        "     4. Boreas-10K: 10.0 kW Industrial HAWT, 3.0 m/s cut-in, 7.2m rotor diameter, designed for open plains/ridges.\n"
-        "   • Selection logic strictly enforces building safety: Residential sites can ONLY select silent Vertical-Axis turbines to avoid structural vibration.\n\n"
-        "3. BATTERY ENERGY STORAGE SYSTEM (BESS) SIZING (`bess_service.py`):\n"
-        "   • Chemistry: Lithium Iron Phosphate (LiFePO4) - 6000+ cycle lifespan, thermally fire-safe.\n"
-        "   • Sizing formula: Storage_kWh = (Daily_Consumption / 24 * Desired_Backup_Hours) / (DoD * Efficiency), where DoD = 85% and Round-Trip Efficiency = 92%.\n"
-        "   • Costing: ₹13,500 per kWh of usable storage. Strictly scoped to battery sizing and CAPEX (no carbon calculations).\n\n"
-        "4. MULTI-CRITERIA DECISION TREE (`recommendation_engine.py`):\n"
-        "   • Cross-evaluates solar vs wind resource scores, financial payback (<14 years is viable), and physical site area.\n"
-        "   • Synthesizes the final authoritative verdict and generates a technical engineering justification text."
-    )
-
-    doc.add_page_break()
-
-    # ==========================================
-    # SECTION 6: MEMBER 4 IN-DEPTH
-    # ==========================================
-    add_header(doc, "Section 6: Member 4 — Interactive Frontend, GIS UI & Security Verification", level=1)
-    doc.add_paragraph(
-        "Title: Lead Full-Stack Integrator & Security QA Lead\n"
-        "Files Owned: backend/main.py, index.html, backend/services/rooftop_image_service.py, backend/services/regional_scanner.py, tests/test_api.py"
-    )
-    
-    add_header(doc, "What Member 4 Must Explain From Start to Finish:", level=2)
-    doc.add_paragraph(
-        "1. REST API ARCHITECTURE (`backend/main.py`):\n"
-        "   • Built on FastAPI. Exposes 3 core endpoints:\n"
-        "     - POST /api/analyze-site: Runs the complete Phase 1 + Phase 2 chain under concurrency lock.\n"
-        "     - POST /api/regional-scan: Generates spatial heatmap raster across 1-50 km radius.\n"
-        "     - POST /api/upload-rooftop-image: Multipart image upload for drone vision and EXIF GPS extraction.\n"
-        "   • Strict Pydantic boundary validation on all inputs (lat/lon limits, regex enums for site categories).\n\n"
-        "2. INTERACTIVE LEAFLET GIS FRONTEND (`index.html`):\n"
-        "   • Multi-layer map: OpenStreetMap Street view, ESRI High-Resolution Satellite imagery, and OpenTopoMap elevation topography.\n"
-        "   • Google Maps-level smooth zoom: Configured with zoomSnap: 0.25, zoomDelta: 0.5, wheelPxPerZoomLevel: 70, and momentum inertia.\n"
-        "   • 4 Quick Map Controls: Floating pill with Zoom In (+), Zoom Out (-), Center on Active Pin, and GPS Geolocation button.\n"
-        "   • Search Bar Glitch Fix: Added clear (✕) button and eliminated mid-keystroke erratic API calls; search only triggers on Enter or explicit submission.\n"
-        "   • Dynamic SVG Artwork Card: Middle card (left of Siting Index) features 100% container-fitted vector landscape art that dynamically changes SVG scene depending on Solar, Wind, or Hybrid verdict.\n\n"
-        "3. DRONE VISION & EXIF GPS EXTRACTOR (`rooftop_image_service.py`):\n"
-        "   • Enforces 15 MB file ceiling and whitelists JPEG/PNG/WebP.\n"
-        "   • Extracts EXIF GPS tags (latitude/longitude) using Pillow/piexif. If detected, the map immediately auto-pans to the drone photo coordinates.\n"
-        "   • Analyzes surface texture entropy and edge density to classify obstruction risk (Low/Medium/High).\n\n"
-        "4. REGIONAL SPATIAL HEATMAP SCANNER (`regional_scanner.py`):\n"
-        "   • Evaluates a multi-point spatial grid (3x3 to 9x9) around the location to classify regional energy zones into Solar Hotspots (amber), Wind Corridors (teal), and Hybrid Prime (blue).\n\n"
-        "5. COMPREHENSIVE QA & SECURITY SUITE (`tests/test_api.py`):\n"
-        "   • 78/78 tests passing in 72 seconds covering API contract integrity, 422 validation, SQL injection immunity, XSS payload rejection, path traversal sanitization, and end-to-end user flows.\n"
-        "   • Bandit static security scan: 1,341 lines clean (0 issues). Pip-audit: 0 known vulnerabilities. Semgrep: 187 rules passed."
-    )
-
-    doc.add_page_break()
-
-    # ==========================================
-    # SECTION 7: FOLDER STRUCTURE BREAKDOWN
-    # ==========================================
-    add_header(doc, "Section 7: Complete Project Directory Structure & File Inventory", level=1)
-    doc.add_paragraph(
-        "This breakdown explains every file and directory in `Desktop\\AI` so that any team member can immediately "
-        "explain its purpose and role to the professor:"
-    )
-
-    table2 = doc.add_table(rows=1, cols=3)
-    table2.alignment = WD_TABLE_ALIGNMENT.CENTER
-    table2.style = 'Table Grid'
-    hdr2 = table2.rows[0].cells
-    hdr2[0].text = "Directory / File Path"
-    hdr2[1].text = "Technical Purpose & Contents"
-    hdr2[2].text = "How It Relates to the Overall Project"
+    table_tech = doc.add_table(rows=1, cols=3)
+    table_tech.alignment = WD_TABLE_ALIGNMENT.CENTER
+    table_tech.style = 'Table Grid'
+    h_tech = table_tech.rows[0].cells
+    h_tech[0].text = "Architecture Tier"
+    h_tech[1].text = "Technologies, Frameworks & Libraries"
+    h_tech[2].text = "Role & Operational Purpose"
     for i in range(3):
-        hdr2[i].paragraphs[0].runs[0].font.bold = True
-        hdr2[i].paragraphs[0].runs[0].font.color.rgb = RGBColor(255, 255, 255)
-        set_cell_background(hdr2[i], "123456")
+        h_tech[i].paragraphs[0].runs[0].font.bold = True
+        h_tech[i].paragraphs[0].runs[0].font.color.rgb = RGBColor(255, 255, 255)
+        set_cell_background(h_tech[i], "123456")
 
-    files_inventory = [
-        ("index.html", "Single-Page Web Application (Vanilla HTML5, CSS3, JS, Leaflet GIS, Chart.js)", "The primary user interface. Renders the interactive map, parameter control pills, Siting Index gauge, 12-month generation charts, and dynamic SVG artwork."),
-        ("backend/main.py", "FastAPI REST API server application", "The central coordinator. Receives HTTP requests from the frontend, executes services sequentially, and returns unified JSON responses."),
-        ("backend/services/weather_service.py", "Meteorological acquisition service", "Fetches 1-year daily solar radiation and 8,760 hourly wind observations from Open-Meteo ERA5 Reanalysis and NASA POWER."),
-        ("backend/services/terrain_service.py", "Digital elevation and topography service", "Samples 3-point coordinates from Open-Elevation SRTM API to calculate slope and boundary-layer Venturi ridge acceleration."),
-        ("backend/services/resource_scoring.py", "Resource suitability scoring engine", "Calculates the 0-100 Solar Suitability Score and 0-100 Wind Suitability Score based on irradiance, temperature, wind shear, and WPD."),
-        ("backend/services/energy_model.py", "Physical energy simulation engine", "Simulates monthly and annual electrical energy output (kWh) for solar PV (PR=0.78) and wind turbines using continuous cubic power curves."),
-        ("backend/services/economics_service.py", "Techno-economic cash flow engine", "Calculates turnkey CAPEX, annual OPEX, net metering savings, simple payback period, LCOE, and 25-year discounted NPV (8% discount rate)."),
-        ("backend/services/recommendation_engine.py", "Multi-criteria decision rule engine", "Synthesizes resource scores, payback feasibility, and site physical limits to recommend Solar, Wind, or Hybrid systems with natural language rationale."),
-        ("backend/services/rooftop_shadow_service.py", "Rooftop shadow and orientation model", "Calculates astronomical solar altitude/azimuth, winter solstice obstacle shadow penetration, optimal panel tilt/azimuth, and unshaded solar area."),
-        ("backend/services/wind_turbine_catalog.py", "Commercial turbine hardware catalog", "Houses specifications for 4 real commercial turbines (VAWT/HAWT) and enforces site-category structural mounting rules."),
-        ("backend/services/bess_service.py", "Battery energy storage sizing model", "Sizes LiFePO4 battery storage for desired night backup hours accounting for 85% DoD and 92% round-trip efficiency."),
-        ("backend/services/rooftop_image_service.py", "Computer vision drone photo analyzer", "Processes uploaded drone/rooftop photos, extracts embedded EXIF GPS coordinates for auto-navigation, and estimates obstruction density."),
-        ("backend/services/regional_scanner.py", "Spatial raster heatmap scanner", "Generates a multi-point coordinate grid (3x3 to 9x9) across a 1-50 km radius to map regional Solar Hotspots and Wind Corridors."),
-        ("backend/data/", "Runtime serialized datastore (CSV & JSON)", "Stores temporary session outputs: daily_weather.csv, hourly_wind.csv, monthly_summary.csv, resource_scores.json, energy_simulation.json, and final_recommendation.json."),
-        ("reports/", "Academic report repository", "Houses the master report, project audit, data quality audit, model metrics JSON, figures, and PowerShell terminal screenshots."),
-        ("scripts/validate_weather_data.py", "Independent data quality validator", "CLI script that checks meteorological datasets for missing values, NASA sentinels, physical bounds, and circular wind direction."),
-        ("scripts/evaluate_model.py", "ML evaluation and latency benchmark", "CLI script that trains the autoregressive Ridge forecasting model, compares against persistence baselines, and benchmarks execution latency."),
-        ("tests/test_api.py", "Automated Pytest test suite (78 tests)", "Verifies API contract shapes, Pydantic bounds, SQL/XSS injection rejection, and end-to-end solar/wind siting pipelines."),
-        ("TESTING_GUIDE.md", "Operational & command manual", "Provides step-by-step PowerShell commands for environment setup, data validation, testing, and starting the server.")
+    tech_matrix = [
+        ("Frontend Client Tier",
+         "• HTML5 / CSS3 (Hallmark minimalist sage-slate theme)\n• Vanilla JavaScript (ES6+, async/await, fetch API)\n• Leaflet.js 1.9.4 (Interactive Slippy Map)\n• Chart.js 4.4 (Semicircle gauge & bar charts)\n• Scalable Vector Graphics (SVG 1.1)",
+         "Renders the interactive map, controls parameter pills, executes zero-reload asynchronous REST calls, draws generation charts, and updates dynamic SVG artwork without frontend build toolchain overhead."),
+        ("Backend Web API Tier",
+         "• Python 3.14.3\n• FastAPI 0.143.0 (ASGI high-performance web framework)\n• Starlette & Uvicorn 0.54.0 (ASGI server)\n• Pydantic v2 (Declarative request validation)\n• Python threading.Lock (Concurrency safety)",
+         "Validates incoming client parameters, routes HTTP requests, enforces CORS policies, coordinates micro-services sequentially, and serializes JSON envelopes."),
+        ("Data & Numerical Tier",
+         "• Pandas 3.0.6 (DataFrames, resampling, time-series)\n• NumPy 2.5.4 (Vectorized arrays, L2 Ridge regression)\n• Python math module (Trigonometric functions)\n• File-based datastore (CSV & JSON format)",
+         "Performs high-speed tabular processing, data aggregation, 8,760-hour array computations, circular wind vector averaging, and serialization of simulation states."),
+        ("Computer Vision & Drone Vision Tier",
+         "• Pillow (PIL) 13.0.0 (Image processing)\n• piexif 1.1.3 (EXIF metadata parsing)",
+         "Parses uploaded rooftop/drone images, extracts embedded GPS coordinate headers (lat/lon), and performs texture edge-density and entropy scoring to estimate roof obstacle coverage."),
+        ("Geospatial & Climate APIs",
+         "• Open-Meteo ERA5 / Copernicus Global Reanalysis API\n• NASA POWER API (NASA Langley Research Center)\n• Open-Elevation API (Shuttle Radar Topography Mission)\n• OpenStreetMap, ESRI Satellite, OpenTopoMap",
+         "Provides global climate and digital elevation observations without manual hardware deployment, powering site analysis for any coordinate on Earth."),
+        ("Testing & Quality Assurance Tier",
+         "• Pytest 9.2.0 (Automated test runner)\n• HTTPX 0.28.1 (Asynchronous HTTP client for testing)\n• Bandit 1.9.4 (AST security linter)\n• pip-audit 2.10.1 (CVE vulnerability audit)\n• Semgrep 1.182.1 (Static code analysis rule engine)",
+         "Guarantees software correctness, verifying 78 automated test cases, OWASP Top 10 security standards, input sanitization, and dependency safety.")
     ]
 
-    for f_path, f_desc, f_rel in files_inventory:
-        row = table2.add_row().cells
-        row[0].text = f_path
+    for tier, stack, purp in tech_matrix:
+        row = table_tech.add_row().cells
+        row[0].text = tier
         row[0].paragraphs[0].runs[0].font.bold = True
-        row[1].text = f_desc
-        row[2].text = f_rel
+        row[1].text = stack
+        row[2].text = purp
         for cell in row:
             cell.paragraphs[0].paragraph_format.space_after = Pt(2)
 
     doc.add_page_break()
 
     # ==========================================
-    # SECTION 8: VIVA DEFENSE STRATEGY
+    # SECTION 3: MEMBER 1 IN-DEPTH TECH & IMPL
     # ==========================================
-    add_header(doc, "Section 8: Professor Viva Defense Strategy — Top 10 Questions & Model Answers", level=1)
+    add_header(doc, "Section 3: Member 1 — Data Engineering, Satellite Weather & Topography", level=1)
     doc.add_paragraph(
-        "Here are the exact questions professors typically ask during renewable energy / AI project defenses, "
-        "along with the precise, high-scoring answers your team should deliver:"
+        "Lead Geospatial Data Engineer | Focus: Satellite Acquisition, Data Cleaning, Trigonometric Vector Averaging & Topography\n"
+        "Files: `backend/services/weather_service.py`, `backend/services/terrain_service.py`, `scripts/validate_weather_data.py`"
+    )
+
+    add_header(doc, "1. Technologies Used & Why:", level=2)
+    doc.add_paragraph(
+        "• Python requests: Handles HTTP GET requests with custom timeouts, error handling, and parameter encoding.\n"
+        "• Pandas (pd.DataFrame, pd.date_range, resample): Time-series indexing, date parsing, and monthly aggregations.\n"
+        "• NumPy (np.sin, np.cos, np.arctan2, np.deg2rad): Vectorized circular trigonometry for wind direction.\n"
+        "• Open-Meteo ERA5 Reanalysis API: Primary high-speed satellite weather fetcher (responds in <1s with 100% data coverage).\n"
+        "• NASA POWER API: Secondary fallback weather source.\n"
+        "• Open-Elevation API: Samples global digital elevation data derived from the SRTM satellite mission."
+    )
+
+    add_header(doc, "2. How It Is Implemented in Code:", level=2)
+    doc.add_paragraph(
+        "A. High-Speed Satellite Fetcher (`backend/services/weather_service.py`):\n"
+        "   • The function `fetch_weather_for_location(latitude, longitude)` dynamically computes the 1-year date range ending 5 days prior to today: "
+        "`start_date = end_date - timedelta(days=364)`.\n"
+        "   • Queries Open-Meteo's `/v1/archive` endpoint with `daily=shortwave_radiation_sum,temperature_2m_mean` and `hourly=wind_speed_10m,wind_direction_10m`.\n"
+        "   • Radiation Unit Conversion: Open-Meteo returns shortwave radiation in $MJ/m^2/day$. The implementation converts this directly to electrical engineering units: "
+        "`solar_kwh = (solar_mj / 3.6).clip(lower=0.0)` ($1\ kWh = 3.6\ MJ$).\n"
+        "   • Resampling & Monthly Aggregation: `build_monthly_summary()` uses `daily_df.resample('MS')` and `hourly_df.resample('MS')` to calculate valid observation counts, "
+        "coverage percentages, median wind speed, and 90th percentile wind speed (`quantile(0.90)`).\n"
+        "   • Automatic Fallback: If Open-Meteo raises an exception or times out, the code catches it inside a `try/except` block and automatically invokes `fetch_nasa_data(latitude, longitude)`.\n\n"
+        "B. Circular Wind Direction Averaging (`scripts/validate_weather_data.py` & `weather_service.py`):\n"
+        "   • Why it's needed: Arithmetic averaging fails because $359^\circ$ and $1^\circ$ average to $180^\circ$ (South) instead of $0^\circ$ (North).\n"
+        "   • Code Implementation:\n"
+        "     `rad = np.deg2rad(valid_numeric.values)`\n"
+        "     `sin_mean = np.mean(np.sin(rad))`\n"
+        "     `cos_mean = np.mean(np.cos(rad))`\n"
+        "     `circular_mean_deg = np.rad2deg(np.arctan2(sin_mean, cos_mean)) % 360`\n"
+        "   • Evaluated on our 8,760 hourly readings, this proved a prevailing wind vector of $197.82^\circ$ (South-Southwest), matching monsoonal circulation.\n\n"
+        "C. Topographic Slope & Venturi Wind Speedup (`backend/services/terrain_service.py`):\n"
+        "   • Samples 3 points via Open-Elevation API: `(lat, lon)`, `(lat+0.01, lon)`, and `(lat, lon+0.01)` (offset by ~1.1 km).\n"
+        "   • Elevation gradients: `d_north = (north_elev - center_elev) / 1110.0` and `d_east = (east_elev - center_elev) / 1110.0`.\n"
+        "   • Slope gradient: `s = math.sqrt(d_north**2 + d_east**2)`, converted to degrees: `slope_deg = math.degrees(math.atan(s))`.\n"
+        "   • Aerodynamic Ridge Speed-up: On elevated ground (>600m), terrain accelerates boundary-layer wind via the Venturi effect: "
+        "`wind_terrain_speedup = round(1.0 + min(0.35, s * 2.5), 2)`, applying up to a $1.35\times$ multiplier."
+    )
+
+    doc.add_page_break()
+
+    # ==========================================
+    # SECTION 4: MEMBER 2 IN-DEPTH TECH & IMPL
+    # ==========================================
+    add_header(doc, "Section 4: Member 2 — Resource Scoring, Shadow Modeling & Energy Physics", level=1)
+    doc.add_paragraph(
+        "Lead Renewable Energy Physicist | Focus: Suitability Formulas, Astronomical Solar Position, Shadow Geometry & Physical Simulations\n"
+        "Files: `backend/services/resource_scoring.py`, `backend/services/energy_model.py`, `backend/services/rooftop_shadow_service.py`"
+    )
+
+    add_header(doc, "1. Technologies Used & Why:", level=2)
+    doc.add_paragraph(
+        "• NumPy: High-speed vectorized computations across 8,760 hourly wind data points without slow Python for-loops.\n"
+        "• Python math module: Precision trigonometric functions (`math.sin`, `math.cos`, `math.tan`, `math.radians`, `math.asin`, `math.acos`).\n"
+        "• Solar Astronomical Equations: Rigorous solar altitude and azimuth positioning algorithms.\n"
+        "• Photovoltaic Engineering Models: Standard IEC 61724 PV performance ratio ($PR = 0.78$).\n"
+        "• Wind Turbine Aerodynamics: Continuous cubic power curve interpolation."
+    )
+
+    add_header(doc, "2. How It Is Implemented in Code:", level=2)
+    doc.add_paragraph(
+        "A. Resource Suitability Scoring (`backend/services/resource_scoring.py`):\n"
+        "   • Solar Suitability Score (0 to 100):\n"
+        "     1. Base Irradiance Score (0 to 70 pts): `np.clip((annual_avg_ghi - 2.0) / (6.0 - 2.0) * 70.0, 0.0, 70.0)`.\n"
+        "     2. Temperature Derating (0 to 15 pts): PV cell voltage drops above 25°C. `if avg_temp <= 25: 15.0; elif avg_temp >= 40: 5.0; else: 15.0 - ((avg_temp - 25.0) / 15.0 * 10.0)`.\n"
+        "     3. Seasonal Consistency (0 to 15 pts): `consistency_ratio = min_ghi / max_ghi; score = np.clip(consistency_ratio * 15.0, 0.0, 15.0)`.\n"
+        "   • Wind Suitability Score (0 to 100):\n"
+        "     1. Wind Shear Hub Extrapolation: `mean_speed_hub = mean_speed_10m * ((40.0 / 10.0) ** 0.143)` (Hellman wind shear law).\n"
+        "     2. Base Speed Score (0 to 50 pts): Scaled piecewise (<3.0 m/s: poor; 3.0-6.5 m/s: moderate/good; >6.5 m/s: excellent).\n"
+        "     3. Cut-In Availability Score (0 to 30 pts): `(effective_speeds >= 3.0).sum() / len(effective_speeds) * 30.0`.\n"
+        "     4. Wind Power Density (WPD) Score (0 to 20 pts): `wpd = 0.5 * 1.225 * mean(v^3); score = np.clip((wpd / 200.0) * 20.0, 0.0, 20.0)`.\n\n"
+        "B. Rooftop Shadow & Azimuth Micro-Placement (`backend/services/rooftop_shadow_service.py`):\n"
+        "   • Astronomical Sun Position: Function `calculate_solar_angles(lat, DOY, solar_hour)` computes declination `delta = 23.45 * sin(360/365 * (DOY - 81))`, "
+        "hour angle `omega = 15 * (hour - 12)`, altitude `sin(alpha) = sin(lat)*sin(delta) + cos(lat)*cos(delta)*cos(omega)`, and azimuth `gamma_s`.\n"
+        "   • Winter Solstice Shadow: Sun is lowest on Dec 21 (`DOY = 355`). The shadow length is `L = neighbor_height / tan(radians(alpha_winter))`.\n"
+        "   • Plot Penetration: `shadow_penetration_m = max(0.0, L - neighbor_distance_m)`. Shaded area is subtracted to yield `effective_unshaded_solar_area_m2`.\n"
+        "   • Micro-Placement Zoning: Generates 3 discrete placement polygons: Unobstructed Solar Core (Green), Aerodynamic Wind Parapet (Cyan), and Shaded Buffer (Red).\n\n"
+        "C. Physical Energy Generation Simulation (`backend/services/energy_model.py`):\n"
+        "   • Solar PV: Sized at 7.0 m²/kWp. Monthly generation: `gen_kwh = capacity_kw * ghi * days_in_month * 0.78`.\n"
+        "   • Wind Turbine: Evaluates function `turbine_power_kw(v, rated_kw)` across all 8,760 hourly speeds:\n"
+        "     - If $v < 3.0$ or $v > 25.0\ m/s$: Power = $0\ kW$.\n"
+        "     - If $v \ge 10.5\ m/s$: Power = $P_{rated}$.\n"
+        "     - If $3.0 \le v < 10.5\ m/s$: Power = $P_{rated} \times ((v - 3.0) / (10.5 - 3.0))^{2.5}$."
+    )
+
+    doc.add_page_break()
+
+    # ==========================================
+    # SECTION 5: MEMBER 3 IN-DEPTH TECH & IMPL
+    # ==========================================
+    add_header(doc, "Section 5: Member 3 — Techno-Economics, Hardware Catalogs & Decision Engine", level=1)
+    doc.add_paragraph(
+        "Techno-Economics & Hardware Lead | Focus: 25-Year DCF Financials, Turbine Catalog, BESS Sizing & Decision Matrix\n"
+        "Files: `backend/services/economics_service.py`, `backend/services/recommendation_engine.py`, `backend/services/wind_turbine_catalog.py`, `backend/services/bess_service.py`"
+    )
+
+    add_header(doc, "1. Technologies Used & Why:", level=2)
+    doc.add_paragraph(
+        "• Discounted Cash Flow (DCF) Financial Modeling: Incorporates time value of money, annual degradation, and OPEX.\n"
+        "• Python Dictionary Data Structures: Encapsulates standardized commercial turbine hardware specifications.\n"
+        "• Rule-Based Multi-Criteria Decision Tree: Deterministic logic mapping suitability scores and financials to verdicts without black-box opacity.\n"
+        "• Electrochemical Modeling: Sizing Lithium Iron Phosphate (LiFePO4) storage for peak shaving and night autonomy."
+    )
+
+    add_header(doc, "2. How It Is Implemented in Code:", level=2)
+    doc.add_paragraph(
+        "A. Techno-Economic Feasibility Engine (`backend/services/economics_service.py`):\n"
+        "   • Capital Benchmarks: Solar CAPEX = ₹50,000/kW (OPEX = 1.5%/yr). Wind CAPEX = ₹95,000/kW (OPEX = 3.0%/yr).\n"
+        "   • Net Metering Revenue Formula: Self-consumed energy saves 100% of tariff; surplus energy exported to grid earns 50% export tariff:\n"
+        "     `savings = (usable_energy * tariff) + (surplus_energy * tariff * 0.5)`\n"
+        "   • 25-Year Discounted Net Present Value (NPV):\n"
+        "     `solar_npv = -solar_capex`\n"
+        "     `for year in range(1, 26):`\n"
+        "     `    yearly_cash = (annual_savings * ((1 - 0.005) ** (year - 1))) - opex`\n"
+        "     `    solar_npv += yearly_cash / ((1 + 0.08) ** year)`\n"
+        "   • Simple Payback Period: `payback_years = capex / net_annual_cashflow`.\n"
+        "   • LCOE: `capex / (annual_kwh * 25 * 0.9)` (Levelized Cost of Energy in INR/kWh).\n\n"
+        "B. Commercial Wind Turbine Catalog (`backend/services/wind_turbine_catalog.py`):\n"
+        "   • Houses standardized database `WIND_TURBINE_MODELS` with 4 verified commercial units:\n"
+        "     1. HelixUrban V-800: 0.8 kW VAWT, 1.8 m/s cut-in, 34 dB noise, ₹85,000 CAPEX.\n"
+        "     2. Aeolus Tower-2K: 2.0 kW VAWT, 2.2 m/s cut-in, 38 dB noise, ₹165,000 CAPEX.\n"
+        "     3. Zephyr-3200: 3.2 kW HAWT, 2.8 m/s cut-in, 46 dB noise, ₹240,000 CAPEX.\n"
+        "     4. Boreas-10K: 10.0 kW Industrial HAWT, 3.0 m/s cut-in, 7.2m rotor, ₹680,000 CAPEX.\n"
+        "   • Selection Constraints: If `site_category == 'residential_rooftop'`, code strictly selects VAWT models to protect structural integrity from acoustic resonance and vibration.\n\n"
+        "C. Battery Energy Storage System (BESS) Sizing (`backend/services/bess_service.py`):\n"
+        "   • Sizing formula: `effective_storage_needed = (daily_load / 24 * backup_hours) / (0.85 * 0.92)`.\n"
+        "   • Computes 5 kWh modular pack counts: `module_count = math.ceil(effective_storage_needed / 5.0)`.\n"
+        "   • Costing: `battery_capex = installed_kwh * 13500.0` (₹13,500/kWh for LiFePO4 cells + BMS + inverter).\n\n"
+        "D. Multi-Criteria Decision Engine (`backend/services/recommendation_engine.py`):\n"
+        "   • Evaluates suitability thresholds: Solar viable if score >= 50 and payback <= 14 yrs. Wind viable if score >= 48 or payback <= 14 yrs.\n"
+        "   • Decision Logic: If both viable -> 'Solar-Wind Hybrid System'. If only solar viable -> 'Rooftop / Ground Solar PV'. If wind dominant -> 'Wind Turbine System'. Generates dynamic justification text."
+    )
+
+    doc.add_page_break()
+
+    # ==========================================
+    # SECTION 6: MEMBER 4 IN-DEPTH TECH & IMPL
+    # ==========================================
+    add_header(doc, "Section 6: Member 4 — Interactive Frontend, GIS UI & Security Verification", level=1)
+    doc.add_paragraph(
+        "Lead Full-Stack Integrator & Security QA Lead | Focus: FastAPI Routing, Leaflet GIS, Drone Vision & Automated Testing\n"
+        "Files: `backend/main.py`, `index.html`, `backend/services/rooftop_image_service.py`, `backend/services/regional_scanner.py`, `tests/test_api.py`"
+    )
+
+    add_header(doc, "1. Technologies Used & Why:", level=2)
+    doc.add_paragraph(
+        "• FastAPI & Pydantic v2: High-speed asynchronous Python web framework with automatic OpenAPI documentation and strict data validation.\n"
+        "• Leaflet.js 1.9.4: Open-source interactive mapping library supporting multiple raster tile layers.\n"
+        "• Chart.js 4.4: Canvas-based responsive charting for the 180° semicircle Siting Index gauge and 12-month generation forecast.\n"
+        "• Pillow & piexif: Binary image header parsing and EXIF metadata extraction.\n"
+        "• Pytest & HTTPX: Automated REST API integration and security vulnerability testing."
+    )
+
+    add_header(doc, "2. How It Is Implemented in Code:", level=2)
+    doc.add_paragraph(
+        "A. FastAPI Server Architecture (`backend/main.py`):\n"
+        "   • Defines Pydantic models `SiteAnalysisRequest` and `RegionalScanRequest` with strict boundary constraints (`ge=-90, le=90`, regex pattern for site categories).\n"
+        "   • Endpoints: `GET /` (serves index.html), `GET /api/health`, `POST /api/analyze-site`, `POST /api/regional-scan`, and `POST /api/upload-rooftop-image`.\n"
+        "   • Concurrency Safety: Introduces `_SITE_ANALYSIS_LOCK = Lock()` around `analyze_site` to prevent file-write race conditions.\n"
+        "   • CORS Policy: Enforces `CORSMiddleware` with `allow_origins=['*']` and `allow_credentials=False` (prevents credential theft).\n\n"
+        "B. Interactive Leaflet GIS & Hallmark UI (`index.html`):\n"
+        "   • Map Initialization: `L.map('map', { zoomControl: false, zoomSnap: 0.25, zoomDelta: 0.5, wheelPxPerZoomLevel: 70, inertia: true, inertiaDeceleration: 2000 })`.\n"
+        "   • 3 Layer Switcher: OpenStreetMap Streets, ESRI World Imagery Satellite, and OpenTopoMap Topography.\n"
+        "   • 4 Floating Map Controls: Zoom In (`map.zoomIn()`), Zoom Out (`map.zoomOut()`), Center Active Pin (`centerOnActivePin()`), and GPS Location (`locateUserPosition()`).\n"
+        "   • Search Bar Glitch Fix: The `input` listener only toggles the clear `✕` button; API calls only trigger on `Enter` key or map click, preventing mid-keystroke glitches.\n"
+        "   • Dynamic SVG Artwork Card: Styled with `.hero-media-card { height: 100%; }` and `.media-card-art svg { width: 100%; height: 100%; object-fit: cover; }`. Function `renderRecommendationArt(verdict)` dynamically swaps SVG vector art between Solar, Wind, and Hybrid scenes.\n\n"
+        "C. Drone Photo Computer Vision (`backend/services/rooftop_image_service.py`):\n"
+        "   • Upload Validation: Enforces 15 MB file ceiling and whitelists `image/jpeg`, `image/png`, and `image/webp`.\n"
+        "   • EXIF Extraction: Uses `piexif.load()` to parse GPS IFD tags (GPSLatitude, GPSLongitude, GPSAltitude). Converts DMS (Degrees, Minutes, Seconds) to decimal degrees. "
+        "Frontend receives GPS and auto-pans the map via `map.setView([lat, lon], 17)`.\n"
+        "   • Obstruction Analysis: Converts image to grayscale, calculates Laplacian edge variance and entropy, scoring obstruction density into Low (<20%), Medium, or High.\n\n"
+        "D. Pytest QA & Security Test Suite (`tests/test_api.py`):\n"
+        "   • 78 automated test cases passing in 72 seconds covering:\n"
+        "     - API Contract Integrity: Validates all JSON keys match frontend reads.\n"
+        "     - Input Validation: 23 boundary tests verifying 422 HTTP responses on out-of-range inputs.\n"
+        "     - Injection Immunity: Verifies 422 rejection on SQL injection strings (`'; DROP TABLE;`) and XSS payloads (`<script>alert(1)</script>`).\n"
+        "     - File Upload Security: Rejects ZIP bombs (400), HTML files (400), oversized files >15MB (413), and sanitizes path traversal (`Path(filename).name`).\n"
+        "     - E2E Happy Paths: 6 complete flows verifying Solar, Wind, Hybrid, BESS >0, and CAPEX mathematical consistency."
+    )
+
+    doc.add_page_break()
+
+    # ==========================================
+    # SECTION 7: PIPELINE MECHANICS (HOW IT WORKS)
+    # ==========================================
+    add_header(doc, "Section 7: Pipeline Mechanics: How Modules Work Independently & Jointly", level=1)
+    doc.add_paragraph(
+        "To present convincingly, the team must explain both the standalone modularity of each script and their "
+        "sequential coordination inside `backend/main.py` when an end-user triggers site optimization:"
+    )
+
+    doc.add_paragraph(
+        "1. Independent Execution (Standalone Modularity):\n"
+        "   • Member 1's `weather_service.py` can be run independently from CLI to fetch and save satellite CSVs for any coordinate.\n"
+        "   • Member 1's `terrain_service.py` can be called standalone to compute slopes and Venturi multipliers.\n"
+        "   • Member 2's `resource_scoring.py` can evaluate any existing CSV dataset and output 0-100 scores.\n"
+        "   • Member 2's `rooftop_shadow_service.py` can run independently given any plot geometry to output shadow lengths and solar angles.\n"
+        "   • Member 3's `economics_service.py` can compute 25-year DCF tables for any given kWh generation and tariff.\n"
+        "   • Member 3's `wind_turbine_catalog.py` and `bess_service.py` can be queried independently with capacity parameters.\n"
+        "   • Member 4's `tests/test_api.py` can run against the backend in isolation to verify contract integrity.\n\n"
+        "2. Joint Pipeline Coordination (The Live User Flow):\n"
+        "   Step 1: User clicks on the Leaflet map or types coordinates in the search box.\n"
+        "   Step 2: Frontend JS packages JSON payload and issues `POST http://127.0.0.1:8000/api/analyze-site`.\n"
+        "   Step 3: FastAPI acquires `_SITE_ANALYSIS_LOCK` to ensure single-tenant file safety.\n"
+        "   Step 4: `terrain_service.py` (Member 1) executes -> returns elevation & wind speedup factor.\n"
+        "   Step 5: `weather_service.py` (Member 1) executes -> downloads/validates 365 daily & 8,760 hourly readings.\n"
+        "   Step 6: `resource_scoring.py` (Member 2) executes -> calculates 0-100 Solar & Wind suitability scores.\n"
+        "   Step 7: `rooftop_shadow_service.py` (Member 2) executes -> computes winter shadow and effective unshaded area.\n"
+        "   Step 8: `energy_model.py` (Member 2) executes -> simulates monthly kWh generation using unshaded area and speedup.\n"
+        "   Step 9: `economics_service.py` (Member 3) executes -> evaluates 25-year NPV, payback period, and LCOE.\n"
+        "   Step 10: `recommendation_engine.py` (Member 3) executes -> issues final system verdict and explanation.\n"
+        "   Step 11: `wind_turbine_catalog.py` & `bess_service.py` (Member 3) execute -> select hardware model and size LiFePO4 battery.\n"
+        "   Step 12: FastAPI releases lock and returns unified JSON response.\n"
+        "   Step 13: `index.html` (Member 4) reactively updates all DOM elements, Siting Index gauge, 12-month generation charts, and SVG vector art without browser reload."
+    )
+
+    doc.add_page_break()
+
+    # ==========================================
+    # SECTION 8: FILE INVENTORY
+    # ==========================================
+    add_header(doc, "Section 8: Complete Project Directory Structure & File Inventory", level=1)
+    doc.add_paragraph(
+        "A complete mapping of every file in `Desktop\\AI`, explaining its contents, technologies, and usage:"
+    )
+
+    table_inv = doc.add_table(rows=1, cols=3)
+    table_inv.alignment = WD_TABLE_ALIGNMENT.CENTER
+    table_inv.style = 'Table Grid'
+    hi = table_inv.rows[0].cells
+    hi[0].text = "Directory / File Path"
+    hi[1].text = "Technologies & Contents"
+    hi[2].text = "Role in Project"
+    for i in range(3):
+        hi[i].paragraphs[0].runs[0].font.bold = True
+        hi[i].paragraphs[0].runs[0].font.color.rgb = RGBColor(255, 255, 255)
+        set_cell_background(hi[i], "123456")
+
+    inv_rows = [
+        ("index.html", "Vanilla HTML5, CSS3, JS (ES6+), Leaflet.js, Chart.js", "Frontend user interface dashboard. Houses map layers, control pills, Siting Index gauge, charts, and SVG vector art."),
+        ("backend/main.py", "Python, FastAPI, Starlette, Uvicorn, Pydantic v2", "FastAPI REST API server. Handles routing, request validation, CORS, and sequential micro-service orchestration."),
+        ("backend/services/weather_service.py", "Python, requests, pandas, Open-Meteo, NASA POWER", "Meteorological service. Fetches 365 daily solar and 8,760 hourly wind observations with automatic fallback."),
+        ("backend/services/terrain_service.py", "Python, requests, math, Open-Elevation SRTM", "Topography service. Samples 3-point elevation coordinates to compute slope and Venturi wind speedup."),
+        ("backend/services/resource_scoring.py", "Python, pandas, numpy", "Scoring engine. Computes 0-100 Solar Suitability Score and 0-100 Wind Suitability Score."),
+        ("backend/services/energy_model.py", "Python, pandas, numpy", "Physical simulation engine. Models photovoltaic kWh generation (PR=0.78) and cubic wind turbine power curves."),
+        ("backend/services/economics_service.py", "Python, json, math", "Cash flow engine. Computes CAPEX, OPEX, net metering savings, payback period, LCOE, and 25-yr discounted NPV (8% rate)."),
+        ("backend/services/recommendation_engine.py", "Python, json", "Multi-criteria decision rule engine. Evaluates scores and financials to recommend Solar, Wind, or Hybrid systems."),
+        ("backend/services/rooftop_shadow_service.py", "Python, math", "Shadow geometry service. Computes astronomical sun angles, winter solstice obstacle shadow length, and optimal tilt/azimuth."),
+        ("backend/services/wind_turbine_catalog.py", "Python dictionaries", "Hardware catalog. Contains specs for 4 commercial turbines and enforces residential rooftop mounting safety rules."),
+        ("backend/services/bess_service.py", "Python, math", "Battery storage model. Sizes LiFePO4 battery capacity for desired backup hours accounting for 85% DoD and 92% efficiency."),
+        ("backend/services/rooftop_image_service.py", "Python, Pillow, piexif", "Drone vision service. Extracts embedded EXIF GPS tags for auto-panning and analyzes texture entropy for obstruction scoring."),
+        ("backend/services/regional_scanner.py", "Python, math", "Spatial scanner. Evaluates multi-point coordinate grids (3x3 to 9x9) across 1-50 km radius to map regional Solar Hotspots and Wind Corridors."),
+        ("backend/data/", "CSV and JSON runtime files", "Stores intermediate simulation outputs: daily_weather.csv, hourly_wind.csv, monthly_summary.csv, resource_scores.json, energy_simulation.json, techno_economics.json, final_recommendation.json."),
+        ("reports/", "Markdown, PNG, JSON reports", "Houses master professor report, project audit, data quality report, model metrics JSON, figures, and PowerShell screenshots."),
+        ("scripts/validate_weather_data.py", "Python, pandas, numpy", "CLI data validator. Audits meteorological datasets for missing values, NASA sentinels, physical bounds, and circular wind direction."),
+        ("scripts/evaluate_model.py", "Python, numpy, pandas", "CLI ML benchmark. Evaluates autoregressive Ridge forecasting model vs persistence baselines and profiles latency."),
+        ("tests/test_api.py", "Python, pytest, httpx", "Automated test suite (78 tests). Verifies API contracts, Pydantic bounds, SQL/XSS injection rejection, and end-to-end user flows."),
+        ("TESTING_GUIDE.md", "Markdown documentation", "Operational manual with exact PowerShell commands for environment activation, data validation, testing, and starting Uvicorn.")
+    ]
+
+    for p_file, p_tech, p_role in inv_rows:
+        row = table_inv.add_row().cells
+        row[0].text = p_file
+        row[0].paragraphs[0].runs[0].font.bold = True
+        row[1].text = p_tech
+        row[2].text = p_role
+        for cell in row:
+            cell.paragraphs[0].paragraph_format.space_after = Pt(2)
+
+    doc.add_page_break()
+
+    # ==========================================
+    # SECTION 9: TOP 10 VIVA QUESTIONS & DEFENSE
+    # ==========================================
+    add_header(doc, "Section 9: Top 10 Viva Questions & High-Scoring Defense Answers", level=1)
+    doc.add_paragraph(
+        "Study these 10 authoritative questions and answers to defend your project with complete technical confidence:"
     )
 
     qa_list = [
@@ -480,7 +566,7 @@ def create_document():
         r_a.font.size = Pt(10.5)
 
     doc.save(OUTPUT_FILE)
-    print(f"[SUCCESS] Master Document generated: {OUTPUT_FILE}")
+    print(f"[SUCCESS] Regenerated expanded Master Document: {OUTPUT_FILE}")
 
 if __name__ == "__main__":
     create_document()
