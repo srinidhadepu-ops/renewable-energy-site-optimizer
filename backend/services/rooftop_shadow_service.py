@@ -34,16 +34,19 @@ def calculate_solar_angles(latitude: float, day_of_year: int = 172, solar_time_h
 def analyze_rooftop_shading_and_placement(
     latitude: float,
     longitude: float,
-    polygon_points: Optional[List[Dict[str, float]]] = None,
     total_area_m2: float = 100.0,
     neighbor_building_height_m: float = 4.0,
     neighbor_distance_m: float = 5.0,
-    neighbor_direction: str = "East" # North, South, East, West
+    neighbor_direction: str = "East",
+    polygon_points: Optional[List[Dict[str, float]]] = None
 ) -> Dict[str, Any]:
     """
     Rooftop solar shadow analysis, obstacle buffering, tilt & azimuth orientation,
     and micro-placement heatmap zones.
     """
+    total_area_m2 = float(total_area_m2)
+    neighbor_building_height_m = float(neighbor_building_height_m)
+    neighbor_distance_m = float(neighbor_distance_m)
     # 1. Optimal tilt and azimuth orientation
     # In Northern Hemisphere, optimal azimuth is True South (180°), optimal tilt is roughly latitude +/- 5°
     optimal_azimuth = 180.0 if latitude >= 0 else 0.0 # South for North hemisphere, North for South hemisphere

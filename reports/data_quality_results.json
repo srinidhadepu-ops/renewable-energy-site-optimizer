@@ -1,0 +1,228 @@
+{
+    "audit_version": "1.0",
+    "datasets": {
+        "daily_weather.csv": {
+            "dataset_name": "daily_weather.csv",
+            "row_count": 365,
+            "column_count": 3,
+            "columns": [
+                "date",
+                "ALLSKY_SFC_SW_DWN",
+                "T2M"
+            ],
+            "issues": [],
+            "warnings": [],
+            "column_metrics": {
+                "ALLSKY_SFC_SW_DWN": {
+                    "dtype": "float64",
+                    "missing_count": 0,
+                    "missing_percentage": 0.0,
+                    "sentinel_count": 0,
+                    "non_numeric_coerced": 0,
+                    "min": 0.5111111111111111,
+                    "max": 7.208333333333333,
+                    "mean": 5.517,
+                    "out_of_bounds_count": 0
+                },
+                "T2M": {
+                    "dtype": "float64",
+                    "missing_count": 0,
+                    "missing_percentage": 0.0,
+                    "sentinel_count": 0,
+                    "non_numeric_coerced": 0,
+                    "min": 19.7,
+                    "max": 36.0,
+                    "mean": 27.173,
+                    "out_of_bounds_count": 0
+                }
+            },
+            "duplicate_timestamps": 0,
+            "start_time": "2025-10-24 00:00:00",
+            "end_time": "2026-10-23 00:00:00",
+            "is_monotonic_increasing": true,
+            "exists": true,
+            "file_size_bytes": 12526
+        },
+        "hourly_wind.csv": {
+            "dataset_name": "hourly_wind.csv",
+            "row_count": 8760,
+            "column_count": 3,
+            "columns": [
+                "timestamp",
+                "WS10M",
+                "WD10M"
+            ],
+            "issues": [],
+            "warnings": [],
+            "column_metrics": {
+                "WS10M": {
+                    "dtype": "float64",
+                    "missing_count": 0,
+                    "missing_percentage": 0.0,
+                    "sentinel_count": 0,
+                    "non_numeric_coerced": 0,
+                    "min": 0.05,
+                    "max": 8.89,
+                    "mean": 2.696,
+                    "out_of_bounds_count": 0
+                },
+                "WD10M": {
+                    "dtype": "int64",
+                    "missing_count": 0,
+                    "missing_percentage": 0.0,
+                    "sentinel_count": 0,
+                    "non_numeric_coerced": 0,
+                    "min": 1.0,
+                    "max": 360.0,
+                    "mean": 221.954,
+                    "out_of_bounds_count": 0,
+                    "circular_mean_deg": 270.27
+                }
+            },
+            "duplicate_timestamps": 0,
+            "start_time": "2025-10-24 00:00:00",
+            "end_time": "2026-10-23 23:00:00",
+            "is_monotonic_increasing": true,
+            "exists": true,
+            "file_size_bytes": 260184
+        },
+        "weather_data.csv": {
+            "dataset_name": "weather_data.csv",
+            "row_count": 365,
+            "column_count": 10,
+            "columns": [
+                "date",
+                "ALLSKY_SFC_SW_DWN",
+                "T2M",
+                "T2M_MAX",
+                "T2M_MIN",
+                "RH2M",
+                "PRECTOTCORR",
+                "WS10M",
+                "WS50M",
+                "WD10M"
+            ],
+            "issues": [],
+            "warnings": [
+                "Column 'ALLSKY_SFC_SW_DWN' has high missing rate: 18.36% (67 rows).",
+                "Column 'WD10M' has high missing rate: 100.0% (365 rows)."
+            ],
+            "column_metrics": {
+                "ALLSKY_SFC_SW_DWN": {
+                    "dtype": "float64",
+                    "missing_count": 67,
+                    "missing_percentage": 18.36,
+                    "sentinel_count": 0,
+                    "non_numeric_coerced": 0,
+                    "min": 1.1318,
+                    "max": 8.051,
+                    "mean": 5.235,
+                    "out_of_bounds_count": 0
+                },
+                "T2M": {
+                    "dtype": "float64",
+                    "missing_count": 0,
+                    "missing_percentage": 0.0,
+                    "sentinel_count": 0,
+                    "non_numeric_coerced": 0,
+                    "min": 14.79,
+                    "max": 38.44,
+                    "mean": 25.781,
+                    "out_of_bounds_count": 0
+                },
+                "T2M_MAX": {
+                    "dtype": "float64",
+                    "missing_count": 0,
+                    "missing_percentage": 0.0,
+                    "sentinel_count": 0,
+                    "non_numeric_coerced": 0,
+                    "min": 21.35,
+                    "max": 45.93,
+                    "mean": 32.48,
+                    "out_of_bounds_count": 0
+                },
+                "T2M_MIN": {
+                    "dtype": "float64",
+                    "missing_count": 0,
+                    "missing_percentage": 0.0,
+                    "sentinel_count": 0,
+                    "non_numeric_coerced": 0,
+                    "min": 8.09,
+                    "max": 30.3,
+                    "mean": 19.631,
+                    "out_of_bounds_count": 0
+                },
+                "RH2M": {
+                    "dtype": "float64",
+                    "missing_count": 0,
+                    "missing_percentage": 0.0,
+                    "sentinel_count": 0,
+                    "non_numeric_coerced": 0,
+                    "min": 13.64,
+                    "max": 95.14,
+                    "mean": 58.326,
+                    "out_of_bounds_count": 0
+                },
+                "PRECTOTCORR": {
+                    "dtype": "float64",
+                    "missing_count": 0,
+                    "missing_percentage": 0.0,
+                    "sentinel_count": 0,
+                    "non_numeric_coerced": 0,
+                    "min": 0.0,
+                    "max": 60.78,
+                    "mean": 2.201,
+                    "out_of_bounds_count": 0
+                },
+                "WS10M": {
+                    "dtype": "float64",
+                    "missing_count": 0,
+                    "missing_percentage": 0.0,
+                    "sentinel_count": 0,
+                    "non_numeric_coerced": 0,
+                    "min": 1.24,
+                    "max": 8.03,
+                    "mean": 3.704,
+                    "out_of_bounds_count": 0
+                },
+                "WS50M": {
+                    "dtype": "float64",
+                    "missing_count": 0,
+                    "missing_percentage": 0.0,
+                    "sentinel_count": 0,
+                    "non_numeric_coerced": 0,
+                    "min": 1.64,
+                    "max": 10.52,
+                    "mean": 5.437,
+                    "out_of_bounds_count": 0
+                },
+                "WD10M": {
+                    "dtype": "float64",
+                    "missing_count": 365,
+                    "missing_percentage": 100.0,
+                    "sentinel_count": 0,
+                    "non_numeric_coerced": 0,
+                    "min": null,
+                    "max": null,
+                    "mean": null,
+                    "out_of_bounds_count": 0
+                }
+            },
+            "duplicate_timestamps": 0,
+            "start_time": "2025-10-07 00:00:00",
+            "end_time": "2026-10-06 00:00:00",
+            "is_monotonic_increasing": true,
+            "exists": true,
+            "file_size_bytes": 20692
+        }
+    },
+    "weather_metadata": {
+        "latitude": 17.986188,
+        "longitude": 79.519546,
+        "source": "Open-Meteo ERA5 / Copernicus Global Reanalysis",
+        "start": "2025-10-24",
+        "end": "2026-10-23",
+        "daily_records": 365,
+        "hourly_records": 8760
+    }
+}
